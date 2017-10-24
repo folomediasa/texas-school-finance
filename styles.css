@@ -866,6 +866,8 @@ hr {
 .section p {
   font-size: 22px;
   max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 h1 {
