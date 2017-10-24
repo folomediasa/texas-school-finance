@@ -855,12 +855,17 @@ hr {
 }
 
 .section div {
-  min-width: 33%;
+  min-width: 300px;
   max-width: 500px;
+}
+.section img {
+  /* width: 20%; */
+  /* height: auto; */
 }
 
 .section p {
   font-size: 22px;
+  max-width: 500px;
 }
 
 h1 {
