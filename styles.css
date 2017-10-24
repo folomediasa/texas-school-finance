@@ -844,17 +844,23 @@ hr {
 }
 
 .section.alt {
-  background: #ddd;
+  background: #f3f1f2;
 }
 
 .section {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  padding: 20px;
 }
 
 .section div {
   min-width: 33%;
+  max-width: 500px;
+}
+
+.section p {
+  font-size: 22px;
 }
 
 h1 {
