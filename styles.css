@@ -836,6 +836,8 @@ hr {
   margin-left: 0;
   margin-right: 0;
   max-width: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 .article-header {
   margin: 0 auto;
@@ -843,15 +845,16 @@ hr {
   margin-bottom: 25vh;
 }
 
-.section.alt {
-  background: #f3f1f2;
-}
-
 .section {
+  background: white;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   padding: 20px;
+}
+
+.section.alt {
+  background: #f3f1f2;
 }
 
 .section div {
@@ -889,4 +892,16 @@ button {
 
 button:focus {
   outline: none
+}
+
+.waypoint {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 100vh;
+}
+
+.waypoint div {
+  font-size: 22px;
+  max-width: 500px;
 }
