@@ -757,8 +757,10 @@ var Waypoint = function (_React$PureComponent) {
 
 exports.default = Waypoint;
 
-},{"./utils/screen":"/Users/mathisonian/projects/folo/education-interactive/components/default/utils/screen.js","react":"/Users/mathisonian/projects/folo/education-interactive/node_modules/react/index.js","react-dom":"/Users/mathisonian/projects/folo/education-interactive/node_modules/react-dom/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/image.js":[function(require,module,exports){
+},{"./utils/screen":"/Users/mathisonian/projects/folo/education-interactive/components/default/utils/screen.js","react":"/Users/mathisonian/projects/folo/education-interactive/node_modules/react/index.js","react-dom":"/Users/mathisonian/projects/folo/education-interactive/node_modules/react-dom/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/flex.js":[function(require,module,exports){
 'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -772,35 +774,56 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var React = require('react');
 
-var CustomComponent = function (_React$Component) {
-  _inherits(CustomComponent, _React$Component);
+var aligns = {
+  left: 'flex-start',
+  center: 'center',
+  right: 'flex-end'
+};
+var directions = {
+  horizontal: 'column',
+  vertical: 'row'
+};
+var fullBleedStyles = {
+  position: ""
+};
 
-  function CustomComponent() {
-    _classCallCheck(this, CustomComponent);
+var Flex = function (_React$Component) {
+  _inherits(Flex, _React$Component);
 
-    return _possibleConstructorReturn(this, (CustomComponent.__proto__ || Object.getPrototypeOf(CustomComponent)).apply(this, arguments));
+  function Flex() {
+    _classCallCheck(this, Flex);
+
+    return _possibleConstructorReturn(this, (Flex.__proto__ || Object.getPrototypeOf(Flex)).apply(this, arguments));
   }
 
-  _createClass(CustomComponent, [{
+  _createClass(Flex, [{
     key: 'render',
     value: function render() {
       var _props = this.props,
           hasError = _props.hasError,
           updateProps = _props.updateProps,
-          props = _objectWithoutProperties(_props, ['hasError', 'updateProps']);
+          direction = _props.direction,
+          align = _props.align,
+          fullBleed = _props.fullBleed,
+          props = _objectWithoutProperties(_props, ['hasError', 'updateProps', 'direction', 'align', 'fullBleed']);
 
-      return React.createElement(
-        'div',
-        { style: { padding: 10 } },
-        React.createElement('img', { style: { width: '100%' }, src: props.src })
-      );
+      return React.createElement('div', _extends({ style: {
+          display: 'flex',
+          flexDirection: directions[direction],
+          justifyContent: aligns[align]
+        } }, props));
     }
   }]);
 
-  return CustomComponent;
+  return Flex;
 }(React.Component);
 
-module.exports = CustomComponent;
+Flex.defaultProps = {
+  direction: 'horizontal',
+  align: 'center'
+};
+
+module.exports = Flex;
 
 },{"react":"/Users/mathisonian/projects/folo/education-interactive/node_modules/react/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js":[function(require,module,exports){
 'use strict';
@@ -40110,7 +40133,7 @@ function extend() {
 },{}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["nav", [], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "Dek TKTK "]], ["author", ["value", "Matthew Conlen"]]], []], ["Section", [["className", ["value", "alt"]]], [["div", [], [["h1", [], ["The Texas education system, like most states is funded by a combination of funds from the federal, state, and local governments."]], ["p", [], ["This section will be a 10,000 foot overview of where schools get their money."]]]]]], ["Section", [["direction", ["value", "column"]]], [["p", [], ["This section will show how, even though there are more underpriveged students, that share of state funding has\nbeen going down."]], ["div", [["style", ["expression", "{display: 'flex', width: '100%', maxWidth: 'none', flexDirection: 'row', justifyContent: 'space-around', marginTop: 60}"]]], [["image", [["src", ["value", "images/state-example.png"]]], []], ["image", [["src", ["value", "images/state-example.png"]]], []], ["image", [["src", ["value", "images/state-example.png"]]], []], ["image", [["src", ["value", "images/state-example.png"]]], []]]]]], ["var", [["name", ["value", "state"]], ["value", ["value", "initial"]]], []], ["Feature", [], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["state", ["expression", " state "]]], []]]]]]]], ["Waypoint", [], [["p", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students."]], ["em", [], ["I’ll put these buttons on scroll events eventually, so you won’t have to click so much."]], ["button", [["onClick", ["expression", "state = \"population-1\" "]]], ["Click Me"]]]], ["Waypoint", [], [["p", [], ["\n    Not only do we have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n    ", ["button", [["onClick", ["expression", "state = \"population-2\" "]]], ["Click Me"]]]]]], ["Waypoint", [], [["p", [], ["\n    Over that same time, funding per student across the state took major cuts,  finally recovered above 2008 spending levels just last year.\n    ", ["button", [["onClick", ["expression", "state = \"state-funding\" "]]], ["Click Me"]]]]]], ["Waypoint", [], [["p", [], ["\n    Relative Funding\n    ", ["button", [["onClick", ["expression", "state = \"relative-funding\" "]]], ["Click Me"]]]]]], ["Waypoint", [], []]]], ["Section", [["className", ["value", "alt"]]], [["div", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased burden on local property taxes, the state\nhas instituted a program called recapture, that redistributes funds from\nproperty-", ["em", [], ["rich"]], " districts to property-", ["em", [], ["poor"]], " districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations."]], ["p", [], ["Lets take a look..."]]]]]], ["Section", [["className", ["value", "alt short"]]], [["div", [["className", ["value", "district"]]], [["h1", [], ["Rich District"]], ["CustomD3Component", [["triggerUpdate", ["expression", " triggerUpdate "]]], []]]], ["div", [["className", ["value", "district"]]], [["h1", [], ["Poor District"]], ["CustomD3Component", [["triggerUpdate", ["expression", " triggerUpdate "]]], []]]]]], ["Section", [], [["div", [], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]]]], ["Section", [["direction", ["value", "column"]]], [["h1", [], ["Section Title"]], ["div", [["style", ["expression", "{display: 'flex', width: '100%', maxWidth: 'none', flexDirection: 'row', justifyContent: 'space-around', marginTop: 60}"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
+module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["nav", [], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on san antonio’s west side is having consequences for all of texas."]], ["author", ["value", "Matthew Conlen"]]], []], ["Section", [["className", ["value", "alt"]]], [["div", [], [["h1", [], ["The Texas education system, like most states is funded by a combination of funds from the federal, state, and local governments."]], ["p", [], ["This section will be a 10,000 foot overview of where schools get their money."]]]]]], ["var", [["name", ["value", "state"]], ["value", ["value", "initial"]]], []], ["Feature", [], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["state", ["expression", " state "]]], []]]]]]]], ["Waypoint", [], []], ["Waypoint", [], [["p", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students."]], ["em", [], ["I’ll put these buttons on scroll events eventually, so you won’t have to click so much."]], ["button", [["onClick", ["expression", "state = \"population-1\" "]]], ["Click Me"]]]], ["Waypoint", [], [["p", [], ["\n    Not only do we have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n    ", ["button", [["onClick", ["expression", "state = \"population-2\" "]]], ["Click Me"]]]]]], ["Waypoint", [], [["p", [], ["\n    Over that same time, funding per student across the state took major cuts,  finally recovered above 2008 spending levels just last year.\n    ", ["button", [["onClick", ["expression", "state = \"state-funding\" "]]], ["Click Me"]]]]]], ["Waypoint", [], [["p", [], ["\n    Relative Funding\n    ", ["button", [["onClick", ["expression", "state = \"relative-funding\" "]]], ["Click Me"]]]]]], ["Waypoint", [], []]]], ["Section", [["className", ["value", "alt"]]], [["div", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased burden on local property taxes, the state\nhas instituted a program called recapture, that redistributes funds from\nproperty-", ["em", [], ["rich"]], " districts to property-", ["em", [], ["poor"]], " districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations."]], ["p", [], ["Lets take a look..."]], ["flex", [["direction", ["value", "vertical"]], ["fullBleed", ["value", "true"]]], [["div", [], [["h1", [], ["Rich District"]], ["CustomD3Component", [["triggerUpdate", ["expression", " triggerUpdate "]]], []]]], ["div", [], [["h1", [], ["Poor District"]], ["CustomD3Component", [["triggerUpdate", ["expression", " triggerUpdate "]]], []]]]]]]]]], ["Section", [], [["div", [], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]]]], ["Section", [["direction", ["value", "column"]]], [["h1", [], ["Section Title"]], ["div", [["style", ["expression", "{display: 'flex', width: '100%', maxWidth: 'none', flexDirection: 'row', justifyContent: 'space-around', marginTop: 60}"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
@@ -40119,17 +40142,17 @@ module.exports = {
 	'nav': require('/Users/mathisonian/projects/folo/education-interactive/components/nav.js'),
 	'header': require('/Users/mathisonian/projects/folo/education-interactive/components/default/header.js'),
 	'section': require('/Users/mathisonian/projects/folo/education-interactive/components/section.js'),
-	'image': require('/Users/mathisonian/projects/folo/education-interactive/components/image.js'),
 	'feature': require('/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js'),
 	'full-screen': require('/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js'),
 	'intro-chart': require('/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js'),
 	'waypoint': require('/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js'),
 	'button': require('/Users/mathisonian/projects/folo/education-interactive/components/default/button.js'),
+	'flex': require('/Users/mathisonian/projects/folo/education-interactive/components/flex.js'),
 	'custom-d3-component': require('/Users/mathisonian/projects/folo/education-interactive/components/custom-d3-component.js'),
 	'story-teaser': require('/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js')
 };
 
-},{"/Users/mathisonian/projects/folo/education-interactive/components/custom-d3-component.js":"/Users/mathisonian/projects/folo/education-interactive/components/custom-d3-component.js","/Users/mathisonian/projects/folo/education-interactive/components/default/button.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/button.js","/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js","/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js","/Users/mathisonian/projects/folo/education-interactive/components/default/header.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/header.js","/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js","/Users/mathisonian/projects/folo/education-interactive/components/image.js":"/Users/mathisonian/projects/folo/education-interactive/components/image.js","/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js":"/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js","/Users/mathisonian/projects/folo/education-interactive/components/nav.js":"/Users/mathisonian/projects/folo/education-interactive/components/nav.js","/Users/mathisonian/projects/folo/education-interactive/components/section.js":"/Users/mathisonian/projects/folo/education-interactive/components/section.js","/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js":"/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js"}],"__IDYLL_DATA__":[function(require,module,exports){
+},{"/Users/mathisonian/projects/folo/education-interactive/components/custom-d3-component.js":"/Users/mathisonian/projects/folo/education-interactive/components/custom-d3-component.js","/Users/mathisonian/projects/folo/education-interactive/components/default/button.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/button.js","/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js","/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js","/Users/mathisonian/projects/folo/education-interactive/components/default/header.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/header.js","/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js","/Users/mathisonian/projects/folo/education-interactive/components/flex.js":"/Users/mathisonian/projects/folo/education-interactive/components/flex.js","/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js":"/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js","/Users/mathisonian/projects/folo/education-interactive/components/nav.js":"/Users/mathisonian/projects/folo/education-interactive/components/nav.js","/Users/mathisonian/projects/folo/education-interactive/components/section.js":"/Users/mathisonian/projects/folo/education-interactive/components/section.js","/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js":"/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js"}],"__IDYLL_DATA__":[function(require,module,exports){
 "use strict";
 
 module.exports = {};
