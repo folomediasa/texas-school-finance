@@ -857,6 +857,10 @@ hr {
   background: #f3f1f2;
 }
 
+.section.short {
+  padding-top: 0 !important;
+}
+
 .section div {
   min-width: 300px;
   max-width: 500px;
@@ -904,4 +908,8 @@ button:focus {
 .waypoint div {
   font-size: 22px;
   max-width: 500px;
+}
+
+.district {
+  text-align: center;
 }
