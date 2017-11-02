@@ -876,6 +876,9 @@ figure {
 .section.short {
   padding-top: 0 !important;
 }
+.section.short-bottom {
+  padding-bottom: 0 !important;
+}
 
 .section > div {
   min-width: 300px;
@@ -949,16 +952,17 @@ button:focus {
 }
 
 .slideshow .slide {
-  position: absolute;
   width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  font-size: 16px;
 }
 
 .slideshow .slide p {
-  font-size: 1.10em;
   font-family: Whitney;
   /* max-width: 350px; */
-  padding: 0 60px;
-  max-width: none;
+  /* padding: 0 60px; */
+  font-size: 16px;
   width: 100%;
   margin: 0 auto;
   /* text-align: center; */
@@ -966,19 +970,17 @@ button:focus {
 
 .slideshow .slide .action {
   display: block;
-  font-size: 1.10em;
   font-family: Whitney;
+  font-size: 16px;
   padding: 0 60px;
   max-width: none;
   width: 100%;
   margin: 0 auto;
-  margin-top: 1.0em;
   text-align: center;
 }
 
 .district-container {
   position: relative;
-  margin-top: 60px;
   width: 100%;
   height: 66vh;
 }

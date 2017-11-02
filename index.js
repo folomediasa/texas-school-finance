@@ -398,7 +398,7 @@ var Header = function (_React$PureComponent) {
 exports.default = Header;
 
 },{"react":"/Users/mathisonian/projects/node_modules/react/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/default/slide.js":[function(require,module,exports){
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -406,7 +406,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require('react');
+var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -428,11 +428,11 @@ var Slide = function (_React$PureComponent) {
   }
 
   _createClass(Slide, [{
-    key: 'render',
+    key: "render",
     value: function render() {
       return _react2.default.createElement(
-        'div',
-        { className: 'slide', style: { position: 'absolute' } },
+        "div",
+        { className: "slide" },
         this.props.children
       );
     }
@@ -927,13 +927,13 @@ var DistrictComparison = function (_D3Component) {
         }
       }).attr('y', function (d) {
         if (d === 0) {
-          return height / 2 - 4 * size;
+          return height / 2 + 4 * size;
         } else if (d === 1) {
-          return height / 2 - size;
+          return height / 2 + size;
         } else if (d === 2) {
-          return height / 2 + size;
+          return 3 * height / 4 + size;
         } else {
-          return height / 2 + size;
+          return 3 * height / 4 + size;
         }
       }).attr('width', 2 * size).attr('height', 2 * size).attr('fill', '#ddd').attr('stroke', '#333').attr('strokeWidth', 3).attr('opacity', 0);
 
@@ -976,7 +976,7 @@ var DistrictComparison = function (_D3Component) {
           }).attr('x', function (d) {
             return 20 + d % columns * size;
           }).attr('y', function (d) {
-            return 100 + Math.floor(d / columns) * size;
+            return height / 2 + Math.floor(d / columns) * size;
           });
 
           this.poorDistricts.transition().duration(500).delay(function (d) {
@@ -984,7 +984,7 @@ var DistrictComparison = function (_D3Component) {
           }).attr('x', function (d) {
             return width - size - 20 - (columns - d % columns) * size;
           }).attr('y', function (d) {
-            return 100 + Math.floor(d / columns) * size;
+            return height / 2 + Math.floor(d / columns) * size;
           });
           break;
         case states.INCOME:
@@ -53495,7 +53495,7 @@ arguments[4]["/Users/mathisonian/projects/folo/education-interactive/node_module
 },{"./cjs/react.development.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.development.js","./cjs/react.production.min.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["div", [["style", ["expression", "{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#000',\n    backgroundSize: 'cover',\n    backgroundPosition: '50% 30%', zIndex: -1} "]]], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["Section", [["direction", ["value", "column"]], ["style", ["expression", "{paddingTop: 60}"]]], [["p", [], ["This text here should be an introduction to the series."]], ["p", [], [["em", [], ["TKTK"]], " To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [["value", ["variable", "scrollValue"]]], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["className", ["value", "alt"]], ["value", ["variable", "scrollValue"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students.\n  "]], ["Waypoint", [], ["\n    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n  "]], ["Waypoint", [], ["\n    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.\n  "]], ["Waypoint", [], ["\n    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account\n    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.\n  "]]]], ["Section", [], [["div", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased local toll, the state\nhas instituted a program called ", ["strong", [], ["recapture"]], ", that redistributes funds from\nproperty rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations. Let’s take a look..."]], ["FullScreen", [], [["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []], ["Slideshow", [["currentSlide", ["expression", " districtStateIndex "]]], [["Slide", [], [["p", [], ["\n  Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK.\n  ", ["p", [], []]]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  Today,  % of property poor districts are funding at the maximum tax rate allowed by the state for ISDs while INSERT % property wealthy districts are funding well below the maximum allowed rate."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], [["p", [], ["\n  In order to ease the burden on these districts, the state instituted the recapture program. However, due to a lack of transparency and incentive, TK% of eligible property rich districts don’t pay into the fund.\n  "]]]]]]]]]]]]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
+module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["div", [["style", ["expression", "{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#000',\n    backgroundSize: 'cover',\n    backgroundPosition: '50% 30%', zIndex: -1} "]]], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["Section", [["direction", ["value", "column"]], ["style", ["expression", "{paddingTop: 60}"]]], [["p", [], ["This text here should be an introduction to the series."]], ["p", [], [["em", [], ["TKTK"]], " To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [["value", ["variable", "scrollValue"]]], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["className", ["value", "alt"]], ["value", ["variable", "scrollValue"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students.\n  "]], ["Waypoint", [], ["\n    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n  "]], ["Waypoint", [], ["\n    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.\n  "]], ["Waypoint", [], ["\n    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account\n    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.\n  "]]]], ["Section", [["className", ["value", ""]]], [["div", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased local toll, the state\nhas instituted a program called ", ["strong", [], ["recapture"]], ", that redistributes funds from\nproperty rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations. Let’s take a look..."]], ["FullScreen", [], [["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []], ["Slideshow", [["currentSlide", ["expression", " districtStateIndex "]]], [["Slide", [], [["p", [], ["\n  Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK.\n  ", ["p", [], []]]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  Today,  % of property poor districts are funding at the maximum tax rate allowed by the state for ISDs while INSERT % property wealthy districts are funding well below the maximum allowed rate."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], ["\n  In order to ease the burden on these districts, the state instituted the recapture program. However, due to a lack of transparency and incentive, TK% of eligible property rich districts don’t pay into the fund.\n  "]]]]]]]]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
