@@ -838,11 +838,14 @@ hr {
   max-width: none;
   margin-bottom: 0;
   padding-bottom: 0;
+  font-family: Whitney;
 }
 .article-header {
   margin: 0 auto;
   margin-top: 25vh;
   margin-bottom: 25vh;
+  font-family: Whitney;
+  font-weight: 700;
 }
 
 .section {
@@ -853,8 +856,12 @@ hr {
   padding: 20px;
 }
 
-.section.alt {
+.alt {
   background: #f3f1f2;
+}
+
+figure {
+
 }
 
 .section.short {
@@ -874,6 +881,15 @@ hr {
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
+  font-family: Whitney;
+}
+
+figure {
+  font-family: Whitney;
+}
+
+figure > div {
+  overflow-y: hidden;
 }
 
 h1 {
@@ -903,11 +919,13 @@ button:focus {
   flex-direction: row;
   justify-content: center;
   height: 100vh;
+
 }
 
 .waypoint div {
   font-size: 22px;
   max-width: 500px;
+  padding: 20px 10px;
 }
 
 .district {
@@ -926,7 +944,7 @@ button:focus {
 
 .slideshow .slide p {
   font-size: 1.00em;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Whitney;
   max-width: 350px;
   margin: 0 auto;
 }
@@ -934,7 +952,7 @@ button:focus {
 .slideshow .slide .action {
   display: block;
   font-size: 1.00em;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Whitney;
   max-width: 350px;
   margin: 0 auto;
   margin-top: 1.0em;
@@ -955,4 +973,9 @@ button:focus {
 .action {
   text-decoration: underline;
   cursor: pointer;
+}
+
+.screen-content {
+  background: white;
+  box-sizing: border-box;
 }
