@@ -1010,7 +1010,80 @@ var DistrictComparison = function (_D3Component) {
 
 module.exports = DistrictComparison;
 
-},{"d3":"/Users/mathisonian/projects/folo/education-interactive/node_modules/d3/build/d3.node.js","idyll-d3-component":"/Users/mathisonian/projects/folo/education-interactive/node_modules/idyll-d3-component/lib.js","react":"/Users/mathisonian/projects/node_modules/react/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js":[function(require,module,exports){
+},{"d3":"/Users/mathisonian/projects/folo/education-interactive/node_modules/d3/build/d3.node.js","idyll-d3-component":"/Users/mathisonian/projects/folo/education-interactive/node_modules/idyll-d3-component/lib.js","react":"/Users/mathisonian/projects/node_modules/react/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/flex.js":[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var React = require('react');
+
+var aligns = {
+  left: 'flex-start',
+  center: 'center',
+  right: 'flex-end',
+  between: 'space-between',
+  around: 'space-around'
+};
+var directions = {
+  horizontal: 'row',
+  vertical: 'column'
+};
+var fullBleedStyles = {
+  width: "100%"
+};
+
+var Flex = function (_React$Component) {
+  _inherits(Flex, _React$Component);
+
+  function Flex() {
+    _classCallCheck(this, Flex);
+
+    return _possibleConstructorReturn(this, (Flex.__proto__ || Object.getPrototypeOf(Flex)).apply(this, arguments));
+  }
+
+  _createClass(Flex, [{
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          hasError = _props.hasError,
+          updateProps = _props.updateProps,
+          direction = _props.direction,
+          align = _props.align,
+          fullBleed = _props.fullBleed,
+          props = _objectWithoutProperties(_props, ['hasError', 'updateProps', 'direction', 'align', 'fullBleed']);
+
+      return React.createElement('div', _extends({ style: {
+          display: 'flex',
+          margin: '0 auto',
+          flexDirection: directions[direction],
+          justifyContent: aligns[align],
+          width: fullBleed ? '100%' : 'auto',
+          maxWidth: fullBleed ? 'none' : undefined
+        } }, props));
+    }
+  }]);
+
+  return Flex;
+}(React.Component);
+
+Flex.defaultProps = {
+  direction: 'horizontal',
+  align: 'center'
+};
+
+module.exports = Flex;
+
+},{"react":"/Users/mathisonian/projects/node_modules/react/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js":[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1024,6 +1097,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var React = require('react');
 var D3Component = require('idyll-d3-component');
 var d3 = require('d3');
+var debounce = require('debounce');
 
 var states = {
   INITIAL: 'initial',
@@ -1063,11 +1137,16 @@ var IntroChart = function (_D3Component) {
       var width = this.width = totalWidth - margin.left - margin.right;
       var height = this.height = totalHeight - margin.top - margin.bottom;
 
-      var x = this.x = d3.scaleLinear().domain([0, 100]).range([margin.left, margin.left + width]);
-      var y = this.y = d3.scaleLinear().domain([0, 100]).range([margin.top + height, margin.top]);
+      var x = this.x = d3.scaleTime().domain([new Date('2008'), new Date('2016')]).range([0, width]);
+      var y = this.y = d3.scaleLinear().domain([0, 100]).range([height, 0]);
       var line = this.line = d3.line().x(function (d) {
         return x(d.x);
       }).y(function (d) {
+        return y(d.y);
+      });
+      var area = this.area = d3.area().x(function (d) {
+        return x(d.x);
+      }).y0(height).y1(function (d) {
         return y(d.y);
       });
 
@@ -1075,21 +1154,33 @@ var IntroChart = function (_D3Component) {
 
       svg.attr('viewBox', '0 0 ' + totalWidth + ' ' + totalHeight).style('width', '100%').style('height', 'auto');
 
+      var content = svg.append('g').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
+      // add the X gridlines
+      content.append("g").attr("class", "grid x").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x).ticks(5).tickSize(-height).tickFormat(""));
+
+      // add the Y gridlines
+      content.append("g").attr("class", "grid y").call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(""));
+
       // Add the X Axis
-      svg.append("g").attr("transform", 'translate(0, ' + (margin.top + height) + ')').call(d3.axisBottom(x));
+      content.append("g").attr('class', 'axis x').attr("transform", 'translate(0, ' + height + ')').call(d3.axisBottom(x));
 
       // Add the Y Axis
-      svg.append("g").attr("transform", 'translate(' + margin.left + ', 0)').call(d3.axisLeft(y));
+      content.append("g").attr('class', 'axis y').call(d3.axisLeft(y));
 
-      this.populationPath = svg.append('path').attr('fill', '#ddd').attr('stroke', 'black').attr('d', line([{ x: 0, y: 0 }, { x: 100, y: 100 }])).attr('stroke-dasharray', initialDash);
+      this.populationPath = content.append('path').attr('fill', '#01bec4').attr('stroke', '#01bec4').attr('stroke-width', '3').attr('d', area([{ x: new Date('2008'), y: 0 }, { x: new Date('2016'), y: 100 }])).attr('stroke-dasharray', initialDash);
 
-      var subPaths = svg.append('g');
-      subPaths.append('path').attr('fill', 'none').attr('stroke', 'red').attr('d', line([{ x: 0, y: 0 }, { x: 100, y: 40 }])).attr('stroke-dasharray', initialDash);
-      subPaths.append('path').attr('fill', 'none').attr('stroke', 'blue').attr('d', line([{ x: 0, y: 0 }, { x: 100, y: 30 }])).attr('stroke-dasharray', initialDash);
+      var subPaths = content.append('g');
+      // subPaths.append('path')
+      //   .attr('fill', 'none')
+      //   .attr('stroke', 'red')
+      //   .attr('d', line([{x: new Date('2008'), y: 0}, {x: new Date('2016'), y: 40}]))
+      //   .attr('stroke-dasharray', initialDash)
+      subPaths.append('path').attr('fill', '#f7756d').attr('stroke', '#f7756d').attr('stroke-width', '3').attr('d', area([{ x: new Date('2008'), y: 0 }, { x: new Date('2016'), y: 30 }])).attr('opacity', 0).attr('stroke-dasharray', initialDash);
       this.subPopulationPaths = subPaths.selectAll('path');
 
-      var revenuePaths = svg.append('g');
-      this.statePath = revenuePaths.append('path').attr('fill', 'none').attr('stroke', 'blue').attr('stroke-width', 10).attr('d', line([{ x: 0, y: 100 }, { x: 100, y: 0 }])).attr('stroke-dasharray', initialDash);
+      var revenuePaths = content.append('g');
+      this.statePath = revenuePaths.append('path').attr('fill', 'none').attr('stroke', 'blue').attr('stroke-width', 4).attr('d', line([{ x: new Date('2008'), y: 100 }, { x: new Date('2016'), y: 0 }])).attr('stroke-dasharray', initialDash);
 
       this.update(props);
     }
@@ -1099,25 +1190,36 @@ var IntroChart = function (_D3Component) {
       if (state === this.currentState) {
         return;
       }
-      console.log('setting state');
       this.currentState = state;
       switch (state) {
         case states.INITIAL:
           break;
         case states.POPULATION1:
-          this.populationPath.transition().duration(1000).attrTween("stroke-dasharray", tweenDash);
+          this.populationPath.transition()
+          //.duration(1000)
+          .attrTween("stroke-dasharray", tweenDash);
           break;
         case states.POPULATION2:
           console.log('population 2');
-          this.subPopulationPaths.transition().duration(1000).attrTween("stroke-dasharray", tweenDash);
+          this.subPopulationPaths.transition()
+          //.duration(1000)
+          .attr('opacity', 1).attrTween("stroke-dasharray", tweenDash);
           break;
         case states.STATE:
-          this.populationPath.transition().duration(1000).attr('opacity', 0.4);
-          this.subPopulationPaths.transition().duration(1000).attr('opacity', 0.4);
-          this.statePath.transition().duration(1000).attrTween("stroke-dasharray", tweenDash);
+          this.populationPath.transition()
+          //.duration(1000)
+          .attr('opacity', 0.4);
+          this.subPopulationPaths.transition()
+          //.duration(1000)
+          .attr('opacity', 0.4);
+          this.statePath.transition()
+          //.duration(1000)
+          .attrTween("stroke-dasharray", tweenDash);
           break;
         case states.RELATIVE:
-          this.statePath.transition().duration(1000).attr('d', this.line([{ x: 0, y: 50 }, { x: 100, y: 50 }]));
+          this.statePath.transition()
+          //.duration(1000)
+          .attr('d', this.line([{ x: new Date('2008'), y: 50 }, { x: new Date('2016'), y: 50 }]));
           break;
       }
     }
@@ -1144,9 +1246,11 @@ var IntroChart = function (_D3Component) {
   return IntroChart;
 }(D3Component);
 
+IntroChart.update = debounce(IntroChart.update, 250).bind(undefined);
+
 module.exports = IntroChart;
 
-},{"d3":"/Users/mathisonian/projects/folo/education-interactive/node_modules/d3/build/d3.node.js","idyll-d3-component":"/Users/mathisonian/projects/folo/education-interactive/node_modules/idyll-d3-component/lib.js","react":"/Users/mathisonian/projects/node_modules/react/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/nav.js":[function(require,module,exports){
+},{"d3":"/Users/mathisonian/projects/folo/education-interactive/node_modules/d3/build/d3.node.js","debounce":"/Users/mathisonian/projects/folo/education-interactive/node_modules/debounce/index.js","idyll-d3-component":"/Users/mathisonian/projects/folo/education-interactive/node_modules/idyll-d3-component/lib.js","react":"/Users/mathisonian/projects/node_modules/react/index.js"}],"/Users/mathisonian/projects/folo/education-interactive/components/nav.js":[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1266,7 +1370,7 @@ var CustomComponent = function (_React$Component) {
 
       return React.createElement(
         'div',
-        { style: { textAlign: 'center', cursor: 'pointer', width: '25%' } },
+        { style: { textAlign: 'center', cursor: 'pointer', width: '25%', marginTop: 60 } },
         React.createElement('div', { style: { minWidth: 0, height: '40vh', background: 'black' } }),
         'Story Title'
       );
@@ -21746,7 +21850,77 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-time":"/Users/mathisonian/projects/folo/education-interactive/node_modules/d3-time/build/d3-time.js"}],"/Users/mathisonian/projects/folo/education-interactive/node_modules/define-properties/index.js":[function(require,module,exports){
+},{"d3-time":"/Users/mathisonian/projects/folo/education-interactive/node_modules/d3-time/build/d3-time.js"}],"/Users/mathisonian/projects/folo/education-interactive/node_modules/debounce/index.js":[function(require,module,exports){
+"use strict";
+
+/**
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing. The function also has a property 'clear' 
+ * that is a function which will clear the timer to prevent previously scheduled executions. 
+ *
+ * @source underscore.js
+ * @see http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
+ * @param {Function} function to wrap
+ * @param {Number} timeout in ms (`100`)
+ * @param {Boolean} whether to execute at the beginning (`false`)
+ * @api public
+ */
+
+module.exports = function debounce(func, wait, immediate) {
+  var timeout, args, context, timestamp, result;
+  if (null == wait) wait = 100;
+
+  function later() {
+    var last = Date.now() - timestamp;
+
+    if (last < wait && last >= 0) {
+      timeout = setTimeout(later, wait - last);
+    } else {
+      timeout = null;
+      if (!immediate) {
+        result = func.apply(context, args);
+        context = args = null;
+      }
+    }
+  };
+
+  var debounced = function debounced() {
+    context = this;
+    args = arguments;
+    timestamp = Date.now();
+    var callNow = immediate && !timeout;
+    if (!timeout) timeout = setTimeout(later, wait);
+    if (callNow) {
+      result = func.apply(context, args);
+      context = args = null;
+    }
+
+    return result;
+  };
+
+  debounced.clear = function () {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  debounced.flush = function () {
+    if (timeout) {
+      result = func.apply(context, args);
+      context = args = null;
+
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return debounced;
+};
+
+},{}],"/Users/mathisonian/projects/folo/education-interactive/node_modules/define-properties/index.js":[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -53320,7 +53494,7 @@ arguments[4]["/Users/mathisonian/projects/folo/education-interactive/node_module
 },{"./cjs/react.development.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.development.js","./cjs/react.production.min.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [["value", ["variable", "scrollValue"]]], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["className", ["value", "alt"]], ["value", ["expression", " scrollValue "]]], []]]]]]]], ["Waypoint", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students.\n  "]], ["Waypoint", [], ["\n    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n  "]], ["Waypoint", [], ["\n    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.\n  "]], ["Waypoint", [], ["\n    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account\n    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.\n  "]], ["Waypoint", [], []]]], ["Section", [], [["div", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased local toll, the state\nhas instituted a program called ", ["strong", [], ["recapture"]], ", that redistributes funds from\nproperty rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations. Let’s take a look..."]], ["FullScreen", [], [["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []], ["Slideshow", [["currentSlide", ["expression", " districtStateIndex "]]], [["Slide", [], [["p", [], ["\n  Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK.\n  ", ["p", [], []]]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  Today,  % of property poor districts are funding at the maximum tax rate allowed by the state for ISDs while INSERT % property wealthy districts are funding well below the maximum allowed rate."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], [["p", [], ["\n  In order to ease the burden on these districts, the state instituted the recapture program. However, due to a lack of transparency and incentive, TK% of eligible property rich districts don’t pay into the fund.\n  "]]]]]]]]]]]]]]]], ["Section", [], [["div", [], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]]]], ["Section", [["direction", ["value", "column"]]], [["h1", [], ["Section Title"]], ["div", [["style", ["expression", "{display: 'flex', width: '100%', maxWidth: 'none', flexDirection: 'row', justifyContent: 'space-around', marginTop: 60}"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
+module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["Section", [["direction", ["value", "column"]]], [["p", [], ["\nTo find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [["value", ["variable", "scrollValue"]]], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["className", ["value", "alt"]], ["value", ["variable", "scrollValue"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students.\n  "]], ["Waypoint", [], ["\n    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n  "]], ["Waypoint", [], ["\n    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.\n  "]], ["Waypoint", [], ["\n    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account\n    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.\n  "]]]], ["Section", [], [["div", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased local toll, the state\nhas instituted a program called ", ["strong", [], ["recapture"]], ", that redistributes funds from\nproperty rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations. Let’s take a look..."]], ["FullScreen", [], [["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []], ["Slideshow", [["currentSlide", ["expression", " districtStateIndex "]]], [["Slide", [], [["p", [], ["\n  Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK.\n  ", ["p", [], []]]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], ["\n  Today,  % of property poor districts are funding at the maximum tax rate allowed by the state for ISDs while INSERT % property wealthy districts are funding well below the maximum allowed rate."]], ["action", [["onClick", ["expression", " districtStateIndex = (districtStateIndex + 1) % districtStates.length "]]], [" Click to continue..."]]]], ["Slide", [], [["p", [], [["p", [], ["\n  In order to ease the burden on these districts, the state instituted the recapture program. However, due to a lack of transparency and incentive, TK% of eligible property rich districts don’t pay into the fund.\n  "]]]]]]]]]]]]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
@@ -53328,19 +53502,20 @@ module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["val
 module.exports = {
 	'nav': require('/Users/mathisonian/projects/folo/education-interactive/components/nav.js'),
 	'header': require('/Users/mathisonian/projects/folo/education-interactive/components/default/header.js'),
+	'section': require('/Users/mathisonian/projects/folo/education-interactive/components/section.js'),
 	'feature': require('/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js'),
 	'full-screen': require('/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js'),
 	'intro-chart': require('/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js'),
 	'waypoint': require('/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js'),
-	'section': require('/Users/mathisonian/projects/folo/education-interactive/components/section.js'),
 	'district-comparison': require('/Users/mathisonian/projects/folo/education-interactive/components/district-comparison.js'),
 	'slideshow': require('/Users/mathisonian/projects/folo/education-interactive/components/default/slideshow.js'),
 	'slide': require('/Users/mathisonian/projects/folo/education-interactive/components/default/slide.js'),
 	'action': require('/Users/mathisonian/projects/folo/education-interactive/components/default/action.js'),
+	'flex': require('/Users/mathisonian/projects/folo/education-interactive/components/flex.js'),
 	'story-teaser': require('/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js')
 };
 
-},{"/Users/mathisonian/projects/folo/education-interactive/components/default/action.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/action.js","/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js","/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js","/Users/mathisonian/projects/folo/education-interactive/components/default/header.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/header.js","/Users/mathisonian/projects/folo/education-interactive/components/default/slide.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/slide.js","/Users/mathisonian/projects/folo/education-interactive/components/default/slideshow.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/slideshow.js","/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js","/Users/mathisonian/projects/folo/education-interactive/components/district-comparison.js":"/Users/mathisonian/projects/folo/education-interactive/components/district-comparison.js","/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js":"/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js","/Users/mathisonian/projects/folo/education-interactive/components/nav.js":"/Users/mathisonian/projects/folo/education-interactive/components/nav.js","/Users/mathisonian/projects/folo/education-interactive/components/section.js":"/Users/mathisonian/projects/folo/education-interactive/components/section.js","/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js":"/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js"}],"__IDYLL_DATA__":[function(require,module,exports){
+},{"/Users/mathisonian/projects/folo/education-interactive/components/default/action.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/action.js","/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/feature.js","/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/full-screen.js","/Users/mathisonian/projects/folo/education-interactive/components/default/header.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/header.js","/Users/mathisonian/projects/folo/education-interactive/components/default/slide.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/slide.js","/Users/mathisonian/projects/folo/education-interactive/components/default/slideshow.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/slideshow.js","/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js":"/Users/mathisonian/projects/folo/education-interactive/components/default/waypoint.js","/Users/mathisonian/projects/folo/education-interactive/components/district-comparison.js":"/Users/mathisonian/projects/folo/education-interactive/components/district-comparison.js","/Users/mathisonian/projects/folo/education-interactive/components/flex.js":"/Users/mathisonian/projects/folo/education-interactive/components/flex.js","/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js":"/Users/mathisonian/projects/folo/education-interactive/components/intro-chart.js","/Users/mathisonian/projects/folo/education-interactive/components/nav.js":"/Users/mathisonian/projects/folo/education-interactive/components/nav.js","/Users/mathisonian/projects/folo/education-interactive/components/section.js":"/Users/mathisonian/projects/folo/education-interactive/components/section.js","/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js":"/Users/mathisonian/projects/folo/education-interactive/components/story-teaser.js"}],"__IDYLL_DATA__":[function(require,module,exports){
 "use strict";
 
 module.exports = {};

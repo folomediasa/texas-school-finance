@@ -1,23 +1,30 @@
 
 @font-face {
   font-family: Archer;
-  src: url("../styles/archer/Archer-Medium-Pro.otf") format("opentype");
+  src: url("../fonts/archer/Archer-Medium-Pro.otf") format("opentype");
 }
 
 @font-face {
   font-family: Archer;
   font-weight: bold;
-  src: url("../styles/archer/Archer-Bold-Pro.otf") format("opentype");
+  src: url("../fonts/archer/Archer-Bold-Pro.otf") format("opentype");
 }
 
 @font-face {
   font-family: Whitney;
 
-  src: url("../styles/whitney/Whitney-Medium-Adv.otf") format("opentype");
+  src: url("../fonts/whitney/Whitney-Medium-Adv.otf") format("opentype");
 }
 
 @font-face {
   font-family: Whitney;
   font-weight: 700;
-  src: url("../styles/whitney/Whitney-Bold-Adv.otf") format("opentype");
+  src: url("../fonts/whitney/Whitney-Bold-Adv.otf") format("opentype");
+}
+
+
+
+@font-face {
+  font-family: WhitneyNarrow;
+  src: url("../fonts/whitneynarrow/WhitneyNarrSSm-Medium.otf") format("opentype");
 }

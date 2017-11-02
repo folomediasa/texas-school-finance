@@ -922,10 +922,10 @@ button:focus {
 
 }
 
-.waypoint div {
+.waypoint .screen-content {
   font-size: 22px;
   max-width: 500px;
-  padding: 20px 10px;
+  padding: 30px;
 }
 
 .district {
@@ -935,6 +935,7 @@ button:focus {
 .slideshow {
   position: absolute;
   width: 100%;
+  font-weight: bold;
 }
 
 .slideshow .slide {
@@ -943,19 +944,26 @@ button:focus {
 }
 
 .slideshow .slide p {
-  font-size: 1.00em;
+  font-size: 1.10em;
   font-family: Whitney;
-  max-width: 350px;
+  /* max-width: 350px; */
+  padding: 0 60px;
+  max-width: none;
+  width: 100%;
   margin: 0 auto;
+  /* text-align: center; */
 }
 
 .slideshow .slide .action {
   display: block;
-  font-size: 1.00em;
+  font-size: 1.10em;
   font-family: Whitney;
-  max-width: 350px;
+  padding: 0 60px;
+  max-width: none;
+  width: 100%;
   margin: 0 auto;
   margin-top: 1.0em;
+  text-align: center;
 }
 
 .district-container {
@@ -978,4 +986,47 @@ button:focus {
 .screen-content {
   background: white;
   box-sizing: border-box;
+}
+
+text {
+  font-family: WhitneyNarrow;
+  font-size: 14px;
+}
+
+
+.grid line {
+  shape-rendering: crispEdges;
+}
+
+.grid.x line {
+  stroke: #b3b3b3;
+}
+.grid.y line {
+  stroke: #d9d9d9;
+}
+
+.axis text {
+  fill: #999999;
+}
+
+.axis .tick line {
+  display: none;
+}
+.axix.x path {
+  stroke: #4d4d4d;
+}
+.axis.y path {
+  display: none;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
+.story-container {
+  margin-top: 60px;
+}
+
+.centered {
+  margin: 0 auto;
 }
