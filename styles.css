@@ -846,6 +846,15 @@ hr {
   margin-bottom: 25vh;
   font-family: Whitney;
   font-weight: 700;
+  color: white;
+  text-shadow: 3px 3px 3px #000000;
+}
+
+.article-header h1 {
+  font-size: 50px;
+}
+.article-header a {
+  color: #e0cf41;
 }
 
 .section {
@@ -861,7 +870,7 @@ hr {
 }
 
 figure {
-
+  margin-top: 0;
 }
 
 .section.short {
@@ -878,7 +887,8 @@ figure {
 
 .section p {
   font-size: 22px;
-  max-width: 500px;
+  width: 600px;
+  max-width: 600px;
   margin-left: auto;
   margin-right: auto;
   font-family: Whitney;
