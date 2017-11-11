@@ -1014,7 +1014,7 @@ var DistrictComparison = function (_D3Component) {
       textGroup.append('rect').attr('x', 0).attr('y', 0).attr('fill', '#f3f1f2').attr('width', width / 2).attr('height', height / 8);
       var text = textGroup.append('text').attr('dx', 20).attr('dy', 20).style('font-size', '22px');
 
-      d3.json(true ? 'data/isd-topo.json' : 'http://localhost:3000/data/isd-topo.json', function (err, topology) {
+      d3.json(true ? 'https://mathisonian.github.io/folo-education-interactive/data/isd-topo.json' : 'http://localhost:3000/data/isd-topo.json', function (err, topology) {
 
         var geojson = topojson.feature(topology, topology.objects.isd);
         // create a first guess for the projection
