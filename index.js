@@ -168,8 +168,8 @@ var Content = function (_React$PureComponent) {
   return Content;
 }(_react2.default.PureComponent);
 
-var Feature = function (_React$PureComponent2) {
-  _inherits(Feature, _React$PureComponent2);
+var Feature = function (_React$Component) {
+  _inherits(Feature, _React$Component);
 
   function Feature(props) {
     _classCallCheck(this, Feature);
@@ -218,6 +218,11 @@ var Feature = function (_React$PureComponent2) {
       if (rootRect.top < window.innerHeight && rootRect.bottom > 0) {
         this.props.updateProps({ value: position });
       }
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps, nextState) {
+      return this.props.value < 0 && nextProps.value >= 0 || this.props.value >= 0 && nextProps.value < 0 || this.props.value >= 1 && nextProps.value < 1;
     }
   }, {
     key: 'initialize',
@@ -340,7 +345,7 @@ var Feature = function (_React$PureComponent2) {
   }]);
 
   return Feature;
-}(_react2.default.PureComponent);
+}(_react2.default.Component);
 
 Feature.defaultProps = {
   children: []
@@ -950,33 +955,47 @@ var states = {
   RECAPTURE2: 'recapture-2'
 };
 
-var width = 600;
+var width = 900;
 var height = 1200;
 var size = 50;
 
 var richDistrictCount = 25;
 var poorDistrictCount = 15;
 
-var columns = 20;
-var circleSize = 20;
+var columns = 13;
+var circleSize = 40;
 var xOffset = 0;
-var yOffset = 100;
+var yOffset = height / 8;
+var cellSize = circleSize * 1.5;
 
-var poorInterpolator = function poorInterpolator(d, i, reversed) {
+var arcTween = function arcTween(newAngle, arc) {
+  console.log('getting arctween');
+  return function (d) {
+    var interpolate = d3.interpolate(d.endAngle, newAngle);
+    return function (t) {
+      d.endAngle = interpolate(t);
+      return arc(d);
+    };
+  };
+};
+
+var getCircleCenter = function getCircleCenter(d, i, offset) {
   var row = Math.floor(i / columns);
   var column = i % columns;
+  var sign = column === columns / 2 ? 0 : column < columns / 2 ? -1 : 1;
+  return [width / 2 + sign * Math.abs(column - columns / 2) * cellSize + cellSize / 2, height / 2 + offset + (offset < 0 ? -1 : 1) * row * cellSize];
+};
 
-  var interpolator = flubber.toCircle(d.initialPath, xOffset + column * circleSize + circleSize / 2, yOffset + row * circleSize + circleSize / 2, circleSize / 2);
+var poorInterpolator = function poorInterpolator(d, i, reversed) {
+  var center = getCircleCenter(d, i, yOffset);
+  var interpolator = flubber.toCircle(d.initialPath, center[0], center[1], circleSize / 2);
   return function (t) {
     return interpolator(reversed ? 1 - t : t);
   };
 };
 var richInterpolator = function richInterpolator(d, i, reversed) {
-  var row = Math.floor(i / columns);
-  var column = i % columns;
-  var offset = 700;
-
-  var interpolator = flubber.toCircle(d.initialPath, xOffset + column * circleSize + circleSize / 2, offset + yOffset + row * circleSize + circleSize / 2, circleSize / 2);
+  var center = getCircleCenter(d, i, -yOffset);
+  var interpolator = flubber.toCircle(d.initialPath, center[0], center[1], circleSize / 2);
   return function (t) {
     return interpolator(reversed ? 1 - t : t);
   };
@@ -1007,11 +1026,11 @@ var DistrictComparison = function (_D3Component) {
 
       var color = this.color = d3.scaleSequential(d3.interpolateViridis).domain([1.0, 1.5]);
 
-      svg.attr('viewBox', '0 0 ' + width + ' ' + height).style('width', '100%').style('height', '100vh');
+      svg.attr('viewBox', '0 0 ' + width + ' ' + height).style('width', '100%').style('height', '77vh');
 
       var textGroup = svg.append('g').attr('transform', 'translate(' + 0.65 * width + ', ' + height / 16 + ')');
 
-      textGroup.append('rect').attr('x', 0).attr('y', 0).attr('fill', '#f3f1f2').attr('width', width / 2).attr('height', height / 8);
+      // textGroup.append('rect').attr('x', 0).attr('y', 0).attr('fill', '#f3f1f2').attr('width', width / 2).attr('height', height / 8);
       var text = textGroup.append('text').attr('dx', 20).attr('dy', 20).style('font-size', '22px');
 
       d3.json(true ? 'https://mathisonian.github.io/folo-education-interactive/data/isd-topo.json' : 'http://localhost:3000/data/isd-topo.json', function (err, topology) {
@@ -1025,25 +1044,28 @@ var DistrictComparison = function (_D3Component) {
         var path = d3.geoPath().projection(projection);
 
         var b = path.bounds(geojson),
-            s = 1.75 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+            s = 1.25 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
             t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
 
         projection.scale(s).translate(t);
 
+        var arc = _this2.arc = d3.arc().outerRadius(circleSize / 2).innerRadius(0);
         // create the path
-        var cleaned = geojson.features.filter(function (d) {
+        var cleaned = geojson.features.map(function (d) {
           var p = path(d);
           if (!p) {
-            return false;
+            return null;
           }
           d.initialPath = p;
           d.rich = Math.random() < 0.1;
           d.poor = !d.rich && Math.random() < 0.1;
-          return true;
+          return d;
+        }).filter(function (d) {
+          return d;
         });
         var paths = _this2.paths = svg.selectAll("path").data(cleaned).enter().append("path").attr("d", function (d) {
           return d.initialPath;
-        }).style("fill", function (d) {
+        }).style('stroke', '#ffffff').style('stroke-width', 0.5).style("fill", function (d) {
           // console.log(path(d));
           if (+d.properties['Recapture'] > 0) {
             return 'pink';
@@ -1055,6 +1077,35 @@ var DistrictComparison = function (_D3Component) {
         }).on('mouseout', function () {
           d3.select(this).style('stroke', 'none');
         });
+
+        console.log(cleaned.filter(function (d) {
+          return d.rich;
+        }));
+
+        var arcs = _this2.arcs = svg.append('g');
+        _this2.richArcs = arcs.selectAll('.rich-arc').data(cleaned.filter(function (d) {
+          return d.rich;
+        })).enter().append('path').attr('class', 'rich-arc').attr('d', function (d) {
+          d.startAngle = 0;
+          d.end = 0;
+          return arc({ startAngle: d.startAngle, endAngle: d.endAngle });
+        }).attr('transform', function (d, i) {
+          var center = getCircleCenter(d, i, -yOffset);
+          return 'translate(' + center.join(',') + ')';
+        }).style('fill', 'red').attr('opacity', 1);
+
+        _this2.poorArcs = arcs.selectAll('.poor-arc').data(cleaned.filter(function (d) {
+          return d.poor;
+        })).enter().append('path').attr('class', 'poor-arc').attr('d', function (d) {
+          d.startAngle = 0;
+          d.end = 0;
+          return arc({ startAngle: d.startAngle, endAngle: d.endAngle });
+        }).attr('transform', function (d, i) {
+          var center = getCircleCenter(d, i, yOffset);
+          return 'translate(' + center.join(',') + ')';
+        }).style('fill', 'orange').attr('opacity', 1);
+
+        console.log(_this2.richArcs);
 
         _this2.rich = paths.filter(function (d) {
           return d.rich;
@@ -1069,27 +1120,14 @@ var DistrictComparison = function (_D3Component) {
 
       // const columns = 8;
 
-      this.fundingSources = svg.selectAll('.funding-source').data([0, 1, 2, 3]).enter().append('rect').attr('x', function (d) {
-        if (d === 0) {
-          return width / 2 - size;
-        } else if (d === 1) {
-          return width / 2 - size;
-        } else if (d === 2) {
-          return 100;
-        } else {
-          return width - 100 - 2 * size;
-        }
-      }).attr('y', function (d) {
-        if (d === 0) {
-          return height / 2 + 4 * size;
-        } else if (d === 1) {
-          return height / 2 + size;
-        } else if (d === 2) {
-          return 3 * height / 4 + size;
-        } else {
-          return 3 * height / 4 + size;
-        }
-      }).attr('width', 2 * size).attr('height', 2 * size).attr('fill', '#ddd').attr('stroke', '#333').attr('strokeWidth', 3).attr('opacity', 0);
+      var fundingSources = this.fundingSources = svg.append('g').attr('opacity', 0);
+
+      var fsSizeX = 100;
+      var fsSizeY = 20;
+
+      var federal = fundingSources.append('rect').attr('x', 10).attr('y', height / 2 - fsSizeY / 2).attr('width', fsSizeX).attr('height', fsSizeY).attr('fill', '#ddd').attr('stroke', '#333').attr('strokeWidth', 3);
+
+      var state = fundingSources.append('rect').attr('x', width - 10 - fsSizeX).attr('y', height / 2 - fsSizeY / 2).attr('width', fsSizeX).attr('height', fsSizeY).attr('fill', '#ddd').attr('stroke', '#333').attr('strokeWidth', 3);
 
       this.currentState = states.INITIAL;
       // this.update(props);
@@ -1111,7 +1149,7 @@ var DistrictComparison = function (_D3Component) {
         return;
       }
 
-      var animationTime = 1000;
+      var animationTime = 750;
       var particleDelay = 10;
       switch (state) {
         case states.INITIAL:
@@ -1122,53 +1160,77 @@ var DistrictComparison = function (_D3Component) {
             }
             return _this3.color(+d.properties['Total Tax']);
           });
-
-          neither.transition().delay(animationTime / 2).delay(1.5 * animationTime).duration(animationTime).style('opacity', 1);
-          rich.transition().delay(function (d, i) {
-            return i * particleDelay;
-          }).duration(animationTime).attrTween("d", function (d, i) {
-            return richInterpolator(d, i, true);
-          });
-          poor.transition().delay(function (d, i) {
-            return i * particleDelay;
-          }).duration(animationTime).attrTween("d", function (d, i) {
-            return poorInterpolator(d, i, true);
-          });
           break;
         case states.EXTREMES:
           console.log('CURRENT STATE: ' + this.currentState);
-          animationTime = this.currentState === states.INITIAL ? 1000 : 0;
-          particleDelay = this.currentState === states.INITIAL ? 10 : 0;
           console.log('ANIMATION TIME: ' + animationTime);
-          neither.transition().duration(animationTime).style('opacity', 0);
-          rich.transition().delay(animationTime * 1.5).duration(animationTime).style('fill', 'blue');
-          poor.transition().delay(animationTime * 1.5).duration(animationTime).style('fill', 'red');
+          var maxSize = Math.max(neither.size(), rich.size(), poor.size());
+          if (this.currentState !== states.INITIAL) {
+            neither.transition().delay(animationTime + 30 * particleDelay).duration(animationTime).style('opacity', 1);
+            rich.transition().delay(function (_, i) {
+              return i * particleDelay;
+            }).duration(animationTime).attrTween("d", function (d, i) {
+              return richInterpolator(d, i, true);
+            });
+            poor.transition().delay(function (_, i) {
+              return i * particleDelay;
+            }).duration(animationTime).attrTween("d", function (d, i) {
+              return poorInterpolator(d, i, true);
+            });
+          } else {
+            neither.transition().duration(animationTime).style('fill', '#ddd');
+            rich.transition().duration(animationTime).style('fill', 'blue');
+            poor.transition().duration(animationTime).style('fill', 'red');
+          }
+          break;
+        case states.INCOME:
+          neither.transition().delay(0).duration(animationTime).style('opacity', 0);
           rich.transition().delay(function (d, i) {
-            return 3 * animationTime + i * particleDelay;
+            return animationTime + i * particleDelay;
           }).duration(animationTime).attrTween("d", function (d, i) {
             return richInterpolator(d, i);
           });
           poor.transition().delay(function (d, i) {
-            return 3 * animationTime + i * particleDelay;
+            return animationTime + i * particleDelay;
           }).duration(animationTime).attrTween("d", function (d, i) {
             return poorInterpolator(d, i);
           });
           break;
-        case states.INCOME:
-          this.fundingSources.transition().attr('opacity', 1);
-          break;
         case states.TAXES:
-          this.richDistricts.filter(function (d) {
-            return d < richDistrictCount / 4;
-          }).transition().duration(750).delay(function (d) {
-            return 30 * d;
-          }).attr('fill', 'green');
-
-          this.poorDistricts.filter(function (d) {
-            return d < poorDistrictCount / 2;
-          }).transition().duration(750).delay(function (d) {
-            return 30 * d;
-          }).attr('fill', 'red');
+          console.log('taxes');
+          this.fundingSources.transition().duration(animationTime).attr('opacity', 1);
+          break;
+        case states.RECAPTURE1:
+          this.richArcs.attr('opacity', 1).transition().delay(function (d, i) {
+            return i * particleDelay;
+          }).duration(animationTime).attrTween("d", function (d) {
+            return arcTween(Math.random() * 2 * Math.PI, _this3.arc);
+          });
+          this.poorArcs.attr('opacity', 1).transition().delay(function (d, i) {
+            return i * particleDelay;
+          }).duration(animationTime).attrTween("d", function (d) {
+            return arcTween(Math.random() * 2 * Math.PI, _this3.arc);
+          });
+          break;
+        case states.RECAPTURE2:
+          rich.transition().duration(animationTime).delay(function (_, i) {
+            return i * 3 * particleDelay;
+          }).style('stroke', function (d, i) {
+            return i < 10 ? 'black' : 'none';
+          }).style('stroke-width', function (d, i) {
+            return i < 10 ? 2 : 0;
+          }).style("fill", function (d, i) {
+            return i < 10 ? '#00ff00' : 'blue';
+          });
+          poor.transition().duration(animationTime).delay(function (_, i) {
+            return i * 3 * particleDelay;
+          }).style('stroke', function (d, i) {
+            return i < 10 ? 'black' : 'none';
+          }).style('stroke-width', function (d, i) {
+            return i < 10 ? 2 : 0;
+          }).style("fill", function (d, i) {
+            return i < 10 ? '#00ff00' : 'red';
+          });
           break;
       }
 
@@ -1358,7 +1420,7 @@ var IntroChart = function (_D3Component) {
         var sign = i === stateKeys.length / 2 ? 0 : i < stateKeys.length / 2 ? -1 : 1;
         return totalWidth / 2 + sign * Math.abs(i - stateKeys.length / 2) * 30;
       }).attr('cy', totalHeight - 20).attr('r', 5).style('fill', function (d, i) {
-        return i === 0 ? '#ffffff' : '#151E3F';
+        return i === 0 ? '#151E3F' : '#ffffff';
       }).attr('stroke', '#151E3F').attr('stroke-width', 0.5);
 
       this.update(props);
@@ -55438,7 +55500,7 @@ arguments[4]["/Users/mathisonian/projects/folo/education-interactive/node_module
 },{"./cjs/react.development.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.development.js","./cjs/react.production.min.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["div", [["style", ["expression", "{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#000',\n    backgroundSize: 'cover',\n    backgroundPosition: '50% 30%', zIndex: -1} "]]], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["Section", [["direction", ["value", "column"]], ["style", ["expression", "{paddingTop: 60}"]]], [["p", [], ["This text here should be an introduction to the series."]], ["p", [], [["em", [], ["TKTK"]], " To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["className", ["value", "alt"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students.\n  "]], ["Waypoint", [], ["\n    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n  "]], ["Waypoint", [], ["\n    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.\n  "]], ["Waypoint", [["height", ["value", "100vh"]]], ["\n    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account\n    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.\n  "]]]], ["Section", [["style", ["expression", "{paddingTop: 60}"]]], [["div", [], [["Slideshow", [["currentSlide", ["variable", "districtStateIndex"]]], [["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased local toll, the state\nhas instituted a program called ", ["strong", [], ["recapture"]], ", that redistributes funds from\nproperty rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations."]], ["p", [], ["Let’s take a look..."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor."]], ["p", [], ["TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]]]]]], ["controls", [["index", ["variable", "districtStateIndex"]], ["length", ["expression", "districtStates.length"]]], []]]], ["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
+module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["div", [["style", ["expression", "{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#000',\n    backgroundSize: 'cover',\n    backgroundPosition: '50% 30%', zIndex: -1} "]]], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["Section", [["direction", ["value", "column"]], ["style", ["expression", "{paddingTop: 60}"]]], [["p", [], ["This text here should be an introduction to the series."]], ["p", [], [["em", [], ["TKTK"]], " To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [["value", ["variable", "scrollValue"]]], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["value", ["expression", " scrollValue "]], ["className", ["value", "alt"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students.\n  "]], ["Waypoint", [], ["\n    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n  "]], ["Waypoint", [], ["\n    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.\n  "]], ["Waypoint", [["height", ["value", "100vh"]]], ["\n    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account\n    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.\n  "]]]], ["Section", [["style", ["expression", "{paddingTop: 60}"]]], [["div", [], [["Slideshow", [["currentSlide", ["variable", "districtStateIndex"]]], [["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased local toll, the state\nhas instituted a program called ", ["strong", [], ["recapture"]], ", that redistributes funds from\nproperty rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations."]], ["p", [], ["Let’s take a look..."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor."]], ["p", [], ["TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Other stuff, other stuff. Other stuff, other stuff. Other stuff, other stuff. Other stuff, other stuff. Other stuff, other stuff."]], ["p", [], ["Other stuff, other stuff. Other stuff, other stuff."]], ["p", [], ["TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes."]]]]]], ["controls", [["index", ["variable", "districtStateIndex"]], ["length", ["expression", "districtStates.length"]]], []]]], ["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
