@@ -962,18 +962,24 @@ var circleSize = 20;
 var xOffset = 0;
 var yOffset = 100;
 
-var poorInterpolator = function poorInterpolator(d, i) {
+var poorInterpolator = function poorInterpolator(d, i, reversed) {
   var row = Math.floor(i / columns);
   var column = i % columns;
 
-  return flubber.toCircle(d.initialPath, xOffset + column * circleSize + circleSize / 2, yOffset + row * circleSize + circleSize / 2, circleSize / 2);
+  var interpolator = flubber.toCircle(d.initialPath, xOffset + column * circleSize + circleSize / 2, yOffset + row * circleSize + circleSize / 2, circleSize / 2);
+  return function (t) {
+    return interpolator(reversed ? 1 - t : t);
+  };
 };
-var richInterpolator = function richInterpolator(d, i) {
+var richInterpolator = function richInterpolator(d, i, reversed) {
   var row = Math.floor(i / columns);
   var column = i % columns;
   var offset = 700;
 
-  return flubber.toCircle(d.initialPath, xOffset + column * circleSize + circleSize / 2, offset + yOffset + row * circleSize + circleSize / 2, circleSize / 2);
+  var interpolator = flubber.toCircle(d.initialPath, xOffset + column * circleSize + circleSize / 2, offset + yOffset + row * circleSize + circleSize / 2, circleSize / 2);
+  return function (t) {
+    return interpolator(reversed ? 1 - t : t);
+  };
 };
 
 var DistrictComparison = function (_D3Component) {
@@ -999,7 +1005,7 @@ var DistrictComparison = function (_D3Component) {
       });
       var svg = this.svg = d3.select(node).append('svg');
 
-      var color = d3.scaleSequential(d3.interpolateViridis).domain([1.0, 1.5]);
+      var color = this.color = d3.scaleSequential(d3.interpolateViridis).domain([1.0, 1.5]);
 
       svg.attr('viewBox', '0 0 ' + width + ' ' + height).style('width', '100%').style('height', '100vh');
 
@@ -1008,7 +1014,7 @@ var DistrictComparison = function (_D3Component) {
       textGroup.append('rect').attr('x', 0).attr('y', 0).attr('fill', '#f3f1f2').attr('width', width / 2).attr('height', height / 8);
       var text = textGroup.append('text').attr('dx', 20).attr('dy', 20).style('font-size', '22px');
 
-      d3.json('http://localhost:3000/data/isd-topo.json', function (err, topology) {
+      d3.json(true ? 'data/isd-topo.json' : 'http://localhost:3000/data/isd-topo.json', function (err, topology) {
 
         var geojson = topojson.feature(topology, topology.objects.isd);
         // create a first guess for the projection
@@ -1049,6 +1055,16 @@ var DistrictComparison = function (_D3Component) {
         }).on('mouseout', function () {
           d3.select(this).style('stroke', 'none');
         });
+
+        _this2.rich = paths.filter(function (d) {
+          return d.rich;
+        });
+        _this2.poor = paths.filter(function (d) {
+          return d.poor;
+        });
+        _this2.neither = paths.filter(function (d) {
+          return !d.rich && !d.poor;
+        });
       });
 
       // const columns = 8;
@@ -1075,40 +1091,66 @@ var DistrictComparison = function (_D3Component) {
         }
       }).attr('width', 2 * size).attr('height', 2 * size).attr('fill', '#ddd').attr('stroke', '#333').attr('strokeWidth', 3).attr('opacity', 0);
 
+      this.currentState = states.INITIAL;
       // this.update(props);
     }
   }, {
     key: 'update',
     value: function update(props) {
+      var _this3 = this;
+
       var state = props.state;
-      var paths = this.paths;
+      var rich = this.rich,
+          poor = this.poor,
+          neither = this.neither,
+          paths = this.paths;
+
+      var prevState = this.props.state;
 
       if (state === this.currentState) {
         return;
       }
-      console.log('setting state');
-      this.currentState = state;
+
+      var animationTime = 1000;
+      var particleDelay = 10;
       switch (state) {
         case states.INITIAL:
+          this.paths.style("fill", function (d) {
+            // console.log(path(d));
+            if (+d.properties['Recapture'] > 0) {
+              return 'pink';
+            }
+            return _this3.color(+d.properties['Total Tax']);
+          });
+
+          neither.transition().delay(animationTime / 2).delay(1.5 * animationTime).duration(animationTime).style('opacity', 1);
+          rich.transition().delay(function (d, i) {
+            return i * particleDelay;
+          }).duration(animationTime).attrTween("d", function (d, i) {
+            return richInterpolator(d, i, true);
+          });
+          poor.transition().delay(function (d, i) {
+            return i * particleDelay;
+          }).duration(animationTime).attrTween("d", function (d, i) {
+            return poorInterpolator(d, i, true);
+          });
           break;
         case states.EXTREMES:
-          paths.filter(function (d) {
-            return !d.rich && !d.poor;
-          }).transition().duration(1000).style('opacity', 0);
-          paths.filter(function (d) {
-            return d.rich;
-          }).transition().delay(2000).duration(1000).style('fill', 'blue');
-          paths.filter(function (d) {
-            return d.poor;
-          }).transition().delay(2000).duration(1000).style('fill', 'red');
-          paths.filter(function (d) {
-            return d.rich;
-          }).transition().delay(4000).duration(1000).attrTween("d", function (d, i) {
+          console.log('CURRENT STATE: ' + this.currentState);
+          animationTime = this.currentState === states.INITIAL ? 1000 : 0;
+          particleDelay = this.currentState === states.INITIAL ? 10 : 0;
+          console.log('ANIMATION TIME: ' + animationTime);
+          neither.transition().duration(animationTime).style('opacity', 0);
+          rich.transition().delay(animationTime * 1.5).duration(animationTime).style('fill', 'blue');
+          poor.transition().delay(animationTime * 1.5).duration(animationTime).style('fill', 'red');
+          rich.transition().delay(function (d, i) {
+            return 3 * animationTime + i * particleDelay;
+          }).duration(animationTime).attrTween("d", function (d, i) {
             return richInterpolator(d, i);
           });
-          paths.filter(function (d) {
-            return d.poor;
-          }).transition().delay(4000).duration(1000).attrTween("d", function (d, i) {
+          poor.transition().delay(function (d, i) {
+            return 3 * animationTime + i * particleDelay;
+          }).duration(animationTime).attrTween("d", function (d, i) {
             return poorInterpolator(d, i);
           });
           break;
@@ -1127,7 +1169,10 @@ var DistrictComparison = function (_D3Component) {
           }).transition().duration(750).delay(function (d) {
             return 30 * d;
           }).attr('fill', 'red');
+          break;
       }
+
+      this.currentState = state;
     }
   }]);
 
@@ -55393,7 +55438,7 @@ arguments[4]["/Users/mathisonian/projects/folo/education-interactive/node_module
 },{"./cjs/react.development.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.development.js","./cjs/react.production.min.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["div", [["style", ["expression", "{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#000',\n    backgroundSize: 'cover',\n    backgroundPosition: '50% 30%', zIndex: -1} "]]], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["Section", [["direction", ["value", "column"]], ["style", ["expression", "{paddingTop: 60}"]]], [["p", [], ["This text here should be an introduction to the series."]], ["p", [], [["em", [], ["TKTK"]], " To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [["value", ["variable", "scrollValue"]]], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["className", ["value", "alt"]], ["value", ["variable", "scrollValue"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students.\n  "]], ["Waypoint", [], ["\n    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n  "]], ["Waypoint", [], ["\n    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.\n  "]], ["Waypoint", [["height", ["value", "100vh"]]], ["\n    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account\n    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.\n  "]]]], ["Section", [["style", ["expression", "{paddingTop: 30}"]]], [["div", [], [["Slideshow", [["currentSlide", ["variable", "districtStateIndex"]]], [["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased local toll, the state\nhas instituted a program called ", ["strong", [], ["recapture"]], ", that redistributes funds from\nproperty rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations."]], ["p", [], ["Let’s take a look..."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor."]], ["p", [], ["TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]]]]]], ["controls", [["index", ["variable", "districtStateIndex"]], ["length", ["expression", "districtStates.length"]]], []]]], ["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
+module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["div", [["style", ["expression", "{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#000',\n    backgroundSize: 'cover',\n    backgroundPosition: '50% 30%', zIndex: -1} "]]], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["Section", [["direction", ["value", "column"]], ["style", ["expression", "{paddingTop: 60}"]]], [["p", [], ["This text here should be an introduction to the series."]], ["p", [], [["em", [], ["TKTK"]], " To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["className", ["value", "alt"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 2008, children attending Texas ISDs increased by almost half a million students.\n  "]], ["Waypoint", [], ["\n    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.\n  "]], ["Waypoint", [], ["\n    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.\n  "]], ["Waypoint", [["height", ["value", "100vh"]]], ["\n    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account\n    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.\n  "]]]], ["Section", [["style", ["expression", "{paddingTop: 60}"]]], [["div", [], [["Slideshow", [["currentSlide", ["variable", "districtStateIndex"]]], [["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["To help districts that can’t handle the increased local toll, the state\nhas instituted a program called ", ["strong", [], ["recapture"]], ", that redistributes funds from\nproperty rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations."]], ["p", [], ["Let’s take a look..."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor."]], ["p", [], ["TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]]]]]], ["controls", [["index", ["variable", "districtStateIndex"]], ["length", ["expression", "districtStates.length"]]], []]]], ["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]]];
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
