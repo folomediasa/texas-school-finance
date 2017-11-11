@@ -847,7 +847,7 @@ hr {
   font-family: Whitney;
   font-weight: 700;
   color: white;
-  text-shadow: 3px 3px 3px #000000;
+  /* text-shadow: 3px 3px 3px #000000; */
 }
 
 .article-header h1 {
@@ -945,49 +945,19 @@ button:focus {
   text-align: center;
 }
 
-.slideshow {
-  position: absolute;
-  width: 100%;
-  font-weight: bold;
-}
-
-.slideshow .slide {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  font-size: 16px;
-}
-
-.slideshow .slide p {
-  font-family: Whitney;
-  /* max-width: 350px; */
-  /* padding: 0 60px; */
-  font-size: 16px;
-  width: 100%;
-  margin: 0 auto;
-  /* text-align: center; */
-}
-
-.slideshow .slide .action {
-  display: block;
-  font-family: Whitney;
-  font-size: 16px;
-  padding: 0 60px;
-  max-width: none;
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
-}
-
 .district-container {
   position: relative;
   width: 100%;
-  height: 66vh;
+  height: 100vh;
 }
 
 .district-viz {
   position: absolute;
   width: 100%;
+}
+
+.district-viz svg {
+  overflow: visible;
 }
 
 .action {
@@ -1003,6 +973,10 @@ button:focus {
 text {
   font-family: WhitneyNarrow;
   font-size: 14px;
+}
+
+.district-viz text {
+  font-size: 48px;
 }
 
 
@@ -1041,4 +1015,16 @@ text {
 
 .centered {
   margin: 0 auto;
+}
+
+.control {
+  cursor: pointer;
+}
+
+.slideshow .slide p {
+  width: auto;
+}
+
+.slideshow .slide {
+  /* height: 400px; */
 }
