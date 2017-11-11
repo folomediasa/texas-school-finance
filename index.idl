@@ -1,0 +1,137 @@
+[meta title:"Education Interactive" description:"Short description of your project" /]
+[var name:"triggerUpdate" value:false /]
+
+[var name:"districtStateIndex" value:0 /]
+[var name:"districtStates" value:` ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] ` /]
+[derived name:"districtState" value:` districtStates[districtStateIndex] ` /]
+
+[nav /]
+[div style:`{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#000',
+    backgroundSize: 'cover',
+    backgroundPosition: '50% 30%', zIndex: -1} `/]
+
+[Header
+  title:"Hed TK: Education Interactive"
+  subtitle:"How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."
+  author:"Matthew Conlen"
+  authorLink:"https://twitter.com/mathisonian" /]
+
+[Section direction:"column" style:`{paddingTop: 60}`]
+
+This text here should be an introduction to the series.
+
+*TKTK* To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right.
+
+To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right.
+[/Section]
+
+
+[var name:"scrollValue" value:0 /]
+
+[Feature ]
+  [Feature.Content]
+    [FullScreen]
+      [div][IntroChart className:"alt" /][/div]
+    [/FullScreen]
+  [/Feature.Content]
+
+  [Waypoint ]
+    Since 2008, children attending Texas ISDs increased by almost half a million students.
+  [/Waypoint]
+  [Waypoint ]
+    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.
+  [/Waypoint]
+  [Waypoint ]
+    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.
+  [/Waypoint]
+  [Waypoint height:"100vh" ]
+    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account
+    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.
+  [/Waypoint]
+
+[/Feature]
+
+[Section  style:`{paddingTop: 60}`]
+
+[div]
+
+
+[Slideshow currentSlide:districtStateIndex]
+[Slide]
+# A Virtual Gridlock
+
+To help districts that can't handle the increased local toll, the state
+has instituted a program called **recapture**, that redistributes funds from
+property rich districts to property poor districts.
+
+While the program seems well intentioned to improve equity in school fundings, in practice
+both rich and poor districts find themselves stuck in undesirable situations.
+
+Let's take a look...
+[/Slide]
+[Slide]
+# A Virtual Gridlock
+
+Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor.
+
+TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK.
+
+[/Slide]
+[Slide]
+# A Virtual Gridlock
+
+[/Slide]
+
+[/Slideshow]
+
+[controls index:districtStateIndex length:`districtStates.length` /]
+
+[/div]
+
+[div className:"district-container"]
+[DistrictComparison state:` districtState ` className:"district-viz" /]
+
+// [Slideshow currentSlide:` districtStateIndex `]
+//   [Slide]
+//   Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor.
+
+//   [action onClick:` console.log(districtStateIndex); districtStateIndex = (districtStateIndex + 1) % districtStates.length `] Click to continue[/action]
+//   [/Slide]
+//   [Slide]
+//   TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK.
+//   [action onClick:` console.log(districtStateIndex); districtStateIndex = (districtStateIndex - 1) `]
+//     Prev
+//   [/action]
+//   [action onClick:` console.log(districtStateIndex); districtStateIndex = (districtStateIndex + 1) % districtStates.length `] Click to continue[/action]
+//   [/Slide]
+//   [Slide]
+//   While all districts receive funds from the state and federal government, if a district is in need of additional funding they must turn to local property taxes.
+
+//   [action onClick:` districtStateIndex = (districtStateIndex + 1) % districtStates.length `] Click to continue[/action]
+//   [/Slide]
+//   [Slide]
+//   Today,  % of property poor districts are funding at the maximum tax rate allowed by the state for ISDs while INSERT % property wealthy districts are funding well below the maximum allowed rate.
+
+//   [action onClick:` districtStateIndex = (districtStateIndex + 1) % districtStates.length `] Click to continue[/action]
+//   [/Slide]
+//   [Slide]
+//   In order to ease the burden on these districts, the state instituted the recapture program. However, due to a lack of transparency and incentive, TK% of eligible property rich districts don’t pay into the fund.
+//   [/Slide]
+// [/Slideshow]
+[/div]
+[/Section]
+
+[Section direction:"column" className:"short" ]
+[flex direction:"vertical" ]
+# Combined, the future for the state’s 5.3 million children is at risk.
+
+To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE.
+[/flex]
+
+[flex direction:"horizontal" fullBleed:true align:"around" className:"story-container" ]
+[StoryTeaser /]
+[StoryTeaser /]
+[StoryTeaser /]
+[/flex]
+
+[/Section]

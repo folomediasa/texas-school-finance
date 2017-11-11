@@ -1,0 +1,200 @@
+
+/* Put your custom styles here */
+
+.idyll-root {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  font-family: Whitney;
+}
+.article-header {
+  margin: 0 auto;
+  margin-top: 25vh;
+  margin-bottom: 25vh;
+  font-family: Whitney;
+  font-weight: 700;
+  color: white;
+  /* text-shadow: 3px 3px 3px #000000; */
+}
+
+.article-header h1 {
+  font-size: 50px;
+}
+.article-header a {
+  color: #e0cf41;
+}
+
+.section {
+  background: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.alt {
+  background: #f3f1f2;
+}
+
+figure {
+  margin-top: 0;
+}
+
+.section.short {
+  padding-top: 0 !important;
+}
+.section.short-bottom {
+  padding-bottom: 0 !important;
+}
+
+.section > div {
+  min-width: 300px;
+  max-width: 500px;
+}
+.section img {
+  /* height: auto; */
+}
+
+.section p {
+  font-size: 22px;
+  width: 600px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: Whitney;
+}
+
+figure {
+  font-family: Whitney;
+}
+
+figure > div {
+  overflow-y: hidden;
+}
+
+h1 {
+  border-bottom: none;
+}
+
+
+
+button {
+  display: block;
+  margin: 0 auto;
+  border: 0;
+  box-shadow:none;
+  border-radius: 0px;
+  padding: 10px 15px;
+  cursor: pointer;
+  background: #151E3F;
+  color: white;
+}
+
+button:focus {
+  outline: none
+}
+
+.waypoint {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 100vh;
+
+}
+
+.waypoint .screen-content {
+  font-size: 22px;
+  max-width: 500px;
+  padding: 30px;
+}
+
+.district {
+  text-align: center;
+}
+
+.district-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.district-viz {
+  position: absolute;
+  width: 100%;
+}
+
+.district-viz svg {
+  overflow: visible;
+}
+
+.action {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.screen-content {
+  background: white;
+  box-sizing: border-box;
+}
+
+text {
+  font-family: WhitneyNarrow;
+  font-size: 14px;
+}
+
+.district-viz text {
+  font-size: 48px;
+}
+
+
+.grid line {
+  shape-rendering: crispEdges;
+}
+
+.grid.x line {
+  stroke: #b3b3b3;
+}
+.grid.y line {
+  stroke: #d9d9d9;
+}
+
+.axis text {
+  fill: #999999;
+}
+
+.axis .tick line {
+  display: none;
+}
+.axix.x path {
+  stroke: #4d4d4d;
+}
+.axis.y path {
+  display: none;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
+.story-container {
+  margin-top: 60px;
+}
+
+.centered {
+  margin: 0 auto;
+}
+
+.control {
+  cursor: pointer;
+}
+
+.slideshow .slide p {
+  width: auto;
+}
+
+.slideshow .slide {
+  /* height: 400px; */
+}
