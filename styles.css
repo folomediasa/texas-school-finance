@@ -846,7 +846,7 @@ hr {
   margin-bottom: 25vh;
   font-family: Whitney;
   font-weight: 700;
-  color: white;
+  color: black;
   /* text-shadow: 3px 3px 3px #000000; */
 }
 
@@ -854,7 +854,7 @@ hr {
   font-size: 50px;
 }
 .article-header a {
-  color: #e0cf41;
+  color: #5EA5DB;
 }
 
 .section {
