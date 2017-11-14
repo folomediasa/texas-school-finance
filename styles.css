@@ -854,6 +854,12 @@ hr {
   font-size: 50px;
 }
 .article-header a {
+  color: black;
+  border-bottom: solid 2px #5EA5DB;
+  transition: color 0.25s;
+  text-decoration: none;
+}
+.article-header a:hover {
   color: #5EA5DB;
 }
 
