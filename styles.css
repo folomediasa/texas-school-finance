@@ -939,6 +939,7 @@ button:focus {
   font-size: 22px;
   max-width: 500px;
   padding: 30px;
+  box-shadow: 5px 7px 0 rgba(0, 0, 0, 0.3);
 }
 
 .district {
