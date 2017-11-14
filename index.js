@@ -1895,7 +1895,7 @@ var CustomComponent = function (_React$Component) {
         React.createElement(
           'div',
           { style: { padding: '10px 20px' } },
-          React.createElement('img', { src: '/images/logo.png', style: { background: 'none', width: 156 / 1.5, height: 57 / 1.5 } })
+          React.createElement('img', { src: 'images/logo.png', style: { background: 'none', width: 156 / 1.5, height: 57 / 1.5 } })
         )
       );
     }
