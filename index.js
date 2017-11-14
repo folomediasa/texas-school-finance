@@ -455,7 +455,13 @@ var Header = function (_React$PureComponent) {
         this.props.author && _react2.default.createElement(
           'div',
           { className: 'byline' },
-          'November 15, 2017 | Interactive by: ',
+          'November 15, 2017 ',
+          _react2.default.createElement(
+            'span',
+            { style: { fontWeight: 'normal' } },
+            '|'
+          ),
+          ' Interactive by: ',
           _react2.default.createElement(
             'a',
             { target: "_blank", href: this.props.authorLink },
