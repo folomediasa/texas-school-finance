@@ -973,6 +973,8 @@ var _screen2 = _interopRequireDefault(_screen);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -991,12 +993,21 @@ var Waypoint = function (_React$PureComponent) {
   _createClass(Waypoint, [{
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(_screen2.default, _extends({ className: 'waypoint', align: 'center', direction: 'row', height: '75vh' }, this.props));
+      var _props = this.props,
+          updateProps = _props.updateProps,
+          height = _props.height,
+          props = _objectWithoutProperties(_props, ['updateProps', 'height']);
+
+      return _react2.default.createElement(_screen2.default, _extends({ className: 'waypoint', align: 'center', direction: 'row', height: height }, this.props));
     }
   }]);
 
   return Waypoint;
 }(_react2.default.PureComponent);
+
+Waypoint.defaultProps = {
+  height: '75vh'
+};
 
 exports.default = Waypoint;
 
@@ -1629,15 +1640,15 @@ var Flex = function (_React$Component) {
       var _props = this.props,
           hasError = _props.hasError,
           updateProps = _props.updateProps,
+          className = _props.className,
           direction = _props.direction,
           align = _props.align,
           fullBleed = _props.fullBleed,
-          props = _objectWithoutProperties(_props, ['hasError', 'updateProps', 'direction', 'align', 'fullBleed']);
+          props = _objectWithoutProperties(_props, ['hasError', 'updateProps', 'className', 'direction', 'align', 'fullBleed']);
 
-      return React.createElement('div', _extends({ style: {
+      return React.createElement('div', _extends({ className: directions[direction] + ' ' + (className || ''), style: {
           display: 'flex',
           margin: '0 auto',
-          flexDirection: directions[direction],
           justifyContent: aligns[align],
           width: fullBleed ? '100%' : 'auto',
           maxWidth: fullBleed ? 'none' : undefined
@@ -1717,6 +1728,8 @@ var IntroChart = function (_D3Component) {
   _createClass(IntroChart, [{
     key: 'initialize',
     value: function initialize(node, props) {
+
+      this.isMobile = window.innerWidth < 800;
       var margin = { top: 20, right: 0, bottom: 60, left: 50 };
       var totalWidth = window.innerWidth;
       var totalHeight = window.innerHeight;
@@ -1844,7 +1857,7 @@ var IntroChart = function (_D3Component) {
 
       subOverlays.append('line').attr('x1', x(new Date('2011'))).attr('x2', x(new Date('2012'))).attr('y1', y(projected2005Econ[16].y)).attr('y2', y(projected2005Econ[16].y) + 40).attr('stroke', colors.PURPLE).attr('stroke-width', 1).attr('fill', 'none');
 
-      subOverlays.append('text').attr('dx', x(new Date('2012')) + 10).attr('dy', y(projected2005Econ[16].y) + 40 + fontSize).attr('fill', 'white').attr('stroke', 'none').text(label);
+      subOverlays.append('text').attr('dx', x(new Date('2012')) + 10).attr('dy', y(projected2005Econ[16].y) + 40 + fontSize).attr('fill', 'white').attr('stroke', 'none').attr('text-anchor', this.isMobile ? 'end' : 'start').text(label);
 
       // subOverlays.append('rect')
       //   .attr('x', x(new Date('2009')) - label.length * 0.5 * fontSize / 2 - 15)
@@ -1884,36 +1897,36 @@ var IntroChart = function (_D3Component) {
       w = label.length * 0.5 * fontSize + 20;
       h = 30;
 
-      this.revenueLabelRect = revenuePaths.append('rect').attr('x', x(new Date('1996')) - 10).attr('width', w).attr('height', h).attr('stroke', 'black').attr('stroke-width', 2).attr('stroke-dasharray', '0,' + (w + h) + ',' + w + ',' + h).attr('fill', 'none');
+      var fundingSources = this.fundingSources = revenuePaths.append('g').attr('opacity', 0);
+      this.revenueLabelRect = revenuePaths.append('rect').attr('x', x(new Date('1996')) - 10).attr('width', w).attr('height', h).attr('stroke', 'black').attr('stroke-width', 2).attr('stroke-dasharray', '0,' + (w + h) + ',' + w + ',' + h).style('fill', this.isMobile ? '#f3f1f2' : 'none');
 
       this.revenueLabelText = revenuePaths.append('text').attr('dx', x(new Date('1996')))
       // .attr('text-anchor', 'middle')
       .style('dominant-baseline', 'middle').attr('font-size', fontSize + 'px').attr('fill', 'black').attr('stroke', 'none').text(label);
 
-      var fundingSources = this.fundingSources = revenuePaths.append('g').attr('opacity', 0);
-
       this.stateFunding = fundingSources.append('path').attr('fill', colors.BLUE).attr('stroke', '#ffffff').attr('stroke-width', 0.5);
 
       fontSize = 12;
-      this.stateFundingText = fundingSources.append('text').text('State funding').attr('fill', 'black').style('font-size', fontSize + 'px').attr('dx', x(new Date('2014')));
+      this.stateFundingText = fundingSources.append('text').text('State funding').attr('fill', 'black').style('font-size', fontSize + 'px').attr('text-anchor', this.isMobile ? 'end' : 'start').attr('dx', x(new Date('2014')));
 
       this.localFunding = fundingSources.append('path').attr('fill', colors.GREEN).attr('stroke', '#ffffff').attr('stroke-width', 0.5);
 
-      this.localFundingText = fundingSources.append('text').text('Local property tax').attr('fill', 'black').style('font-size', fontSize + 'px').attr('dx', x(new Date('2014')));
-
-      fontSize = 10;
       this.localOtherFunding = fundingSources.append('path').attr('fill', colors.GREEN).attr('fill-opacity', 0.8).attr('stroke', '#ffffff').attr('stroke-width', 0.5);
 
-      this.localOtherFundingText = fundingSources.append('text').text('Other local funding').attr('fill', 'black').style('font-size', fontSize + 'px').attr('dx', x(new Date('2014')));
+      this.federalFunding = fundingSources.append('path').attr('fill', colors.PINK).attr('stroke', '#ffffff').attr('stroke-width', 0.5);
+
+      this.localFundingText = fundingSources.append('text').text('Local property tax').attr('text-anchor', this.isMobile ? 'end' : 'start').attr('fill', 'black').style('font-size', fontSize + 'px').attr('dx', x(new Date('2014')));
+
+      fontSize = 10;
+
+      this.localOtherFundingText = fundingSources.append('text').text('Other local funding').attr('text-anchor', this.isMobile ? 'end' : 'start').attr('fill', 'black').style('font-size', fontSize + 'px').attr('dx', x(new Date('2014')));
       // this.localProjectedFunding = fundingSources.append('path')
       //   .attr('fill', greenTexture.url())
       //   .attr('stroke', '#ffffff')
       //   .attr('stroke-width', 0.5);
 
-      this.federalFunding = fundingSources.append('path').attr('fill', colors.PINK).attr('stroke', '#ffffff').attr('stroke-width', 0.5);
-
       fontSize = 12;
-      this.federalFundingText = fundingSources.append('text').text('Federal funding').attr('fill', 'black').style('font-size', fontSize + 'px').attr('dx', x(new Date('2014')));
+      this.federalFundingText = fundingSources.append('text').text('Federal funding').attr('text-anchor', this.isMobile ? 'end' : 'start').attr('fill', 'black').style('font-size', fontSize + 'px').attr('dx', x(new Date('2014')));
 
       var localIncreaseAnnotation = this.localIncreaseAnnotation = fundingSources.append('g').attr('opacity', 0);
 
@@ -2064,7 +2077,7 @@ var IntroChart = function (_D3Component) {
           fontSize = 10;
           this.localOtherFundingText.attr('dy', y(d.state + d.local + d.localOther / 2) + 0.5 * fontSize);
           fontSize = 12;
-          this.federalFundingText.attr('dy', y(d.state + d.local + d.localOther + d.federal / 2) + 0.5 * fontSize);
+          this.federalFundingText.attr('dy', this.isMobile ? 30 : y(d.state + d.local + d.localOther + d.federal / 2) + 0.5 * fontSize);
 
           this.federalFunding.attr('d', area.y0(function (d) {
             return y(d.state + d.local + d.localOther);
@@ -2198,7 +2211,7 @@ var CustomComponent = function (_React$Component) {
 
       return React.createElement(
         'div',
-        { className: 'section ' + (props.className || ''), style: Object.assign({ 'width': '100%', minHeight: '75vh', padding: '25vh 0', flexDirection: props.direction || 'row' }, props.style || {}) },
+        { className: 'section ' + (props.className || ''), style: Object.assign({ 'width': '100%', minHeight: '75vh', padding: '25vh 0' }, props.style || {}) },
         this.props.children
       );
     }
@@ -2243,7 +2256,7 @@ var CustomComponent = function (_React$Component) {
 
       return React.createElement(
         'div',
-        { style: { textAlign: 'center', cursor: 'pointer', width: '25%', marginTop: 60 } },
+        { className: 'story-teaser', style: { textAlign: 'center', cursor: 'pointer', marginTop: 60 } },
         React.createElement('div', { style: { minWidth: 0, height: '40vh', background: 'black' } }),
         'Story Title'
       );

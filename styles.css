@@ -1055,9 +1055,73 @@ text {
   font-size: 22px;
 }
 
+.column {
+  flex-direction: column;
+}
+
+.row {
+  flex-direction: row;
+}
+
+.section {
+  flex-direction: row;
+}
+
+.story-teaser {
+  width: 25%;
+}
+
 @media all and (max-width: 800px) {
   .district-viz {
     width: 75%;
     left: 12.5%;
+  }
+
+  p, .section p {
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .column {
+    flex-direction: column;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+  .section {
+    flex-direction: column;
+  }
+
+  .story-teaser {
+    width: 75%;
+    margin: 0 auto;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    padding-left: 10px;
+  }
+
+  .waypoint .screen-content {
+    max-width: 90%;
+  }
+
+  .slideshow .slide p {
+    font-size: 14px;
+  }
+
+  .district-container {
+    height: 50vh;
+  }
+  figure .waypoint {
+    height: 200vh;
+  }
+
+  .axis text {
+    font-size: 12px;
+  }
+  .district-viz svg {
+    margin-top: -60px;
   }
 }
