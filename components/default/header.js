@@ -17,7 +17,7 @@ class Header extends React.PureComponent {
         {
           this.props.author && (
             <div className={'byline'}>
-              Interactive by: <a target={"_blank"} href={this.props.authorLink}>{this.props.author}</a>
+              <span style={{fontWeight: 'normal'}}>By: </span><a target={"_blank"} href={this.props.authorLink}>{this.props.author}</a> <span style={{fontWeight: 'normal'}}>| November 15, 2017</span>
             </div>
           )
         }

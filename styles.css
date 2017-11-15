@@ -1,6 +1,16 @@
 
 /* Put your custom styles here */
 
+p {
+  font-size: 22px;
+  width: 600px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: Whitney;
+}
+
+
 .idyll-root {
   width: 100%;
   margin-left: 0;
@@ -16,7 +26,7 @@
   margin-bottom: 25vh;
   font-family: Whitney;
   font-weight: 700;
-  color: white;
+  color: black;
   /* text-shadow: 3px 3px 3px #000000; */
 }
 
@@ -24,7 +34,13 @@
   font-size: 50px;
 }
 .article-header a {
-  color: #e0cf41;
+  color: black;
+  border-bottom: solid 2px #5EA5DB;
+  transition: color 0.25s;
+  text-decoration: none;
+}
+.article-header a:hover {
+  color: #5EA5DB;
 }
 
 .section {
@@ -66,6 +82,7 @@ figure {
   margin-right: auto;
   font-family: Whitney;
 }
+
 
 figure {
   font-family: Whitney;
@@ -109,6 +126,11 @@ button:focus {
   font-size: 22px;
   max-width: 500px;
   padding: 30px;
+  box-shadow: 5px 7px 0 rgba(0, 0, 0, 0.3);
+}
+
+.waypoint .screen-content p {
+  width: auto;
 }
 
 .district {
@@ -146,7 +168,7 @@ text {
 }
 
 .district-viz text {
-  font-size: 48px;
+  /* font-size: 48px; */
 }
 
 
@@ -197,4 +219,15 @@ text {
 
 .slideshow .slide {
   /* height: 400px; */
+}
+
+.district-viz svg .axis text {
+  font-size: 22px;
+}
+
+@media all and (max-width: 800px) {
+  .district-viz {
+    width: 75%;
+    left: 12.5%;
+  }
 }

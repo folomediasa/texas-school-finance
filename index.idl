@@ -6,49 +6,59 @@
 [derived name:"districtState" value:` districtStates[districtStateIndex] ` /]
 
 [nav /]
-[div style:`{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#000',
+[div style:`{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#f3f1f2',
     backgroundSize: 'cover',
     backgroundPosition: '50% 30%', zIndex: -1} `/]
 
 [Header
   title:"Hed TK: Education Interactive"
-  subtitle:"How 100 years of neglect on San Antonio’s west side is having consequences for all of Texas."
+  subtitle:"Dek TK"
   author:"Matthew Conlen"
   authorLink:"https://twitter.com/mathisonian" /]
 
-[Section direction:"column" style:`{paddingTop: 60}`]
+[div style:`{paddingTop: 120, paddingBottom: 120, background: 'white'}`]
 
-This text here should be an introduction to the series.
+TKTK A short intro. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in sapien id nunc vehicula tempus. Integer ornare odio eu euismod mattis. Duis accumsan erat et nunc dapibus sollicitudin. Integer hendrerit enim in urna mollis, non sollicitudin sem consequat.
 
-*TKTK* To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right.
+[br/]
+[br/]
 
-To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right.
-[/Section]
+Vestibulum vitae nisl sagittis, consectetur enim sed, semper tortor. Sed ullamcorper magna sed pulvinar pellentesque. Nam id aliquet lectus. Aliquam neque est, laoreet nec ligula nec, pulvinar iaculis eros. Mauris gravida, leo vel facilisis eleifend, nulla ipsum convallis tellus, nec rutrum enim purus et justo.
 
+[/div]
 
 [var name:"scrollValue" value:0 /]
 
-[Feature ]
+[Feature value:scrollValue ]
   [Feature.Content]
     [FullScreen]
-      [div][IntroChart className:"alt" /][/div]
+      [div][IntroChart value:` scrollValue ` className:"alt" /][/div]
     [/FullScreen]
   [/Feature.Content]
 
   [Waypoint ]
-    Since 2008, children attending Texas ISDs increased by almost half a million students.
+    Since 1995, the number of children attending Texas schools has increased by more than 1.5 million.
   [/Waypoint]
   [Waypoint ]
-    Not only does the state have more students, but the share of students who are economically disadvantaged has been increasing for some time.
+    The number of students who are economically disadvantaged has been increasing as well, from 1.7 million in
+    1995 to over 3 million in 2016.
   [/Waypoint]
   [Waypoint ]
-    Over that same time, funding per student across the state took major cuts, finally recovered above 2008 spending levels just last year.
+    The increase in students who are economically disadvantaged has been outpacing the general population growth, rising from 46% in 1995 to 59% in 2016.
   [/Waypoint]
-  [Waypoint height:"100vh" ]
-    The only other monetary sources that school districts have are from federal and local funds, and federal funding only account
-    for TK% of district revenue on average. This leaves any burden from lack of state funding largely on local property taxes.
-  [/Waypoint]
+  [Waypoint ]
+    While the average amount of funding per student has increased during this period,
+    individual districts are still feeling a squeeze.
 
+    To understand why, we have to examine where school districts get their money.
+  [/Waypoint]
+  [Waypoint]
+    School districts recieve money from state, federal and local funds. Federal funding accounts for only about 9% of district revenue on average, with the majority coming from state and local sources. Local funding comes largely from property taxes.
+  [/Waypoint]
+  [Waypoint style:`{marginBottom: '50vh'}`]
+    Since 2012 the proportion of funding coming from local property taxes has increased. Districts without
+    much property wealth have a hard time keeping up.
+  [/Waypoint]
 [/Feature]
 
 [Section  style:`{paddingTop: 60}`]
@@ -60,28 +70,57 @@ To find out how we got here, you have to go back to the west side of San Antonio
 [Slide]
 # A Virtual Gridlock
 
-To help districts that can't handle the increased local toll, the state
-has instituted a program called **recapture**, that redistributes funds from
-property rich districts to property poor districts.
+This reliance on local property taxes creates inequity in school funding:
+property wealthy districts are able to raise money much more easily than
+property poor districts. To address this, the state has instituted a *Robin Hood*-esque program called **recapture**,
+that redistributes funds from property rich districts to property poor districts.
 
 While the program seems well intentioned to improve equity in school fundings, in practice
 both rich and poor districts find themselves stuck in undesirable situations.
-
-Let's take a look...
 [/Slide]
 [Slide]
 # A Virtual Gridlock
 
-Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor.
+The state classifies school districts that above a certain threshold of property wealth per student as **property wealthy**.
 
-TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the most property poor has only $TKTK.
+The property wealth of districts varies greatly: Westhoff ISD has the highest property wealth per student, with over $24 million in property wealth per student; Boles ISD is on the other extreme with only about $32,000 per student in property wealth.
+[/Slide]
+[Slide]
+# A Virtual Gridlock
+
+Of the 1022 independent school districts in Texas, 379 (37%) are considered property wealthy by the state. These districts are all eligible to pay into the recapture fund, however because of exceptions only 230 of them actually contribute anything.
+
+Of the districts that do pay, Austin ISD contributes the most, $265 million in 2016-17, accounting for about 18% of the total recapture revenue.
+[/Slide]
+
+[Slide]
+# A Virtual Gridlock
+
+The money is supposed to be redistributed to the school districts via state funding, however the
+state does not report how this money is being used or where it is going.
+
+Folo found that property wealthy districts are hesitant to raise their property taxes (and increase their contribution to recapture) due in part to this lack of transparency by the state.
 
 [/Slide]
 [Slide]
 # A Virtual Gridlock
 
-[/Slide]
+While all independent districts receive funds from the state and federal government, the local property tax rate
+is the main mechanism for districts to raise additional funds.
 
+There is a cap on how heavily property can be taxed: of the property poor districts, 43% percent are already taxing property at the highest allowable rate, compared with only 8% of property wealthy districts.
+
+[/Slide]
+[Slide]
+# A Virtual Gridlock
+
+This rich-wealthy divide is not restricted to property: property poor districtus are more likely to
+have a higher proportion of economically disadvantaged students, many of them minorities. The graph at the
+right shows the relationship between property wealth per student and the proportion of economically disadvantaged students in a district.
+
+What we are left with is a system that leaves both groups, property rich and property poor, left unwanting or unable to raise local property taxes — the one lever that they can pull to raise school funds.
+
+[/Slide]
 [/Slideshow]
 
 [controls index:districtStateIndex length:`districtStates.length` /]
@@ -89,8 +128,9 @@ TKTK, the most property rich district has over $TKTK in wealth, while TKTK, the 
 [/div]
 
 [div className:"district-container"]
-[DistrictComparison state:` districtState ` className:"district-viz" /]
-
+[div className:"district-viz"]
+[DistrictComparison state:` districtState `   /]
+[/div]
 // [Slideshow currentSlide:` districtStateIndex `]
 //   [Slide]
 //   Of the TKTK independent school districts in Texas, TK% are property wealthy, and TK% are property poor.
@@ -135,3 +175,6 @@ To find out how we got here, you have to go back to the west side of San Antonio
 [/flex]
 
 [/Section]
+
+
+[analytics google:"UA-5866209-13" /]

@@ -15,7 +15,7 @@ class Content extends React.PureComponent {
   }
 }
 
-class Feature extends React.PureComponent {
+class Feature extends React.Component {
   constructor (props) {
     super(props)
     this.setFeature = this.setFeature.bind(this);
@@ -54,6 +54,12 @@ class Feature extends React.PureComponent {
     if (rootRect.top < window.innerHeight && rootRect.bottom > 0) {
       this.props.updateProps({value: position})
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.props.value < 0 && nextProps.value >= 0
+      || this.props.value >= 0 && nextProps.value < 0
+      || this.props.value >= 1 && nextProps.value < 1;
   }
 
 
