@@ -1034,11 +1034,24 @@ var size = 50;
 var richDistrictCount = 25;
 var poorDistrictCount = 15;
 
+var scatterMargin = {
+  top: 0,
+  left: 0,
+  right: 30,
+  bottom: 30
+};
+
 var colors = {
-  RED: '#B276B2',
-  BLUE: '#DECF40',
+  GREEN: '#5FBD67',
+  PINK: '#F17CB0',
+  GOLD: '#B3912F',
+  YELLOW: '#E0CF43',
   BLACK: '#4D4D4D',
-  GREEN: '#60BD67'
+  BLUE: '#5EA5DB',
+  ORANGE: '#FBA43A',
+  PURPLE: '#B176B1',
+  GRAY: '#f3f1f2',
+  LIGHT_BLACK: '#999999'
 };
 
 var columns = 40;
@@ -1139,9 +1152,11 @@ var DistrictComparison = function (_D3Component) {
 
       svg.attr('viewBox', '0 0 ' + width + ' ' + height).style('width', '100%').style('height', '77vh');
 
-      var texture = this.texture = textures.lines().orientation("diagonal").size(8).strokeWidth(2).stroke("white").background(colors.BLUE);
+      var texture = this.texture = textures.lines().orientation("diagonal").size(6).strokeWidth(2).stroke("white").background(colors.YELLOW);
 
       svg.call(texture);
+
+      svg.select('defs').append("marker").attr("id", "arrow").attr("viewBox", "0 -5 10 10").attr("refX", 5).attr("refY", 0).attr("markerWidth", 4).attr("markerHeight", 4).attr("orient", 'auto').append("path").attr("d", "M0,-5L10,0L0,5").attr("class", "arrowHead").attr('fill', colors.BLACK);
 
       var textGroup = svg.append('g').attr('transform', 'translate(' + 0.65 * width + ', ' + height / 16 + ')');
 
@@ -1205,9 +1220,9 @@ var DistrictComparison = function (_D3Component) {
         }).style("fill", function (d) {
           // console.log(path(d));
           if (d.properties.isPropertyWealthy) {
-            return d.properties.recapturePaid > 0 ? colors.BLUE : _this3.texture.url();
+            return d.properties.recapturePaid > 0 ? colors.YELLOW : _this3.texture.url();
           }
-          return colors.RED;
+          return colors.PURPLE;
         })
         // .style('fill', '#ffffff')
         .style('fill-opacity', 0.0).style('stroke', '#000000').style('stroke-width', 0.5);
@@ -1222,33 +1237,98 @@ var DistrictComparison = function (_D3Component) {
           return d.rich;
         }));
 
+        var mapLegend = _this3.mapLegend = svg.append('g').attr('opacity', 0);
+        var circleLegend = _this3.circleLegend = svg.append('g').attr('opacity', 0);
+        var scatterLegend = _this3.scatterLegend = svg.append('g').attr('opacity', 0);
+
+        var mapKey = mapLegend.selectAll('.key').data(['Property wealthy, do not pay recapture', 'Property wealthy', 'Property poor']).enter().append('g').attr('class', 'key');
+
+        mapKey.append('rect').attr('x', 0).attr('y', function (d, i) {
+          return height - i * 75 - 175;
+        }).attr('width', function (d, i) {
+          return 50;
+        }).attr('height', function (d, i) {
+          return 50;
+        }).attr('fill', function (d, i) {
+          if (i === 0) {
+            return texture.url();
+          } else if (i === 1) {
+            return colors.YELLOW;
+          } else {
+            return colors.PURPLE;
+          }
+        });
+
+        mapKey.append('text').attr('dx', 70).attr('dy', function (d, i) {
+          return height - i * 75 - 175 + 35;
+        }).style('font-size', '24px').text(function (d) {
+          return d;
+        });
+
+        circleLegend.append('text').attr('dx', -100).attr('dy', 130).style('font-size', '28px').text('Property wealthy districts');
+
+        var noPayGroup = _this3.noPayGroup = circleLegend.append('g');
+        var maxRateGroup = _this3.maxRateGroup = circleLegend.append('g').style('opacity', 0);
+
+        noPayGroup.append('line').attr('x1', width + 100).attr('y1', height / 2 - yOffset + 3 * circleSize / 2).attr('x2', width + 100).attr('y2', height / 2 - yOffset + 100).style('stroke', 'black').style('stroke-width', 2);
+
+        noPayGroup.append('text').attr('text-anchor', 'end').attr('dx', width + 85).attr('dy', height / 2 - yOffset + 90).style('font-size', '28px').text('Do not pay recapture');
+
+        maxRateGroup.append('line').attr('x1', width + 50).attr('y1', height / 2 + yOffset - 3 * circleSize / 2).attr('x2', width + 50).attr('y2', height / 2 + yOffset - 100).style('stroke', 'black').style('stroke-width', 2);
+
+        maxRateGroup.append('text').attr('text-anchor', 'end').attr('dx', width + 35).attr('dy', height / 2 + yOffset - 90).style('font-size', '28px').text('Taxing at max rate');
+
+        circleLegend.append('text').attr('dx', -100).attr('dy', height / 2 + yOffset - 40).style('font-size', '28px').text('Property poor districts');
+
+        scatterLegend.append('text').attr('dx', width - scatterMargin.right - 20).attr('dy', 20).style('font-size', '28px').attr('fill', colors.LIGHT_BLACK).attr('text-anchor', 'end').text('Property wealth per student');
+        scatterLegend.append('text').attr('dx', width - scatterMargin.right - 20).attr('dy', 20 + 34).style('font-size', '28px').attr('fill', colors.LIGHT_BLACK).attr('text-anchor', 'end').text('(log scale)');
+
+        scatterLegend.append('text').attr('dx', 0).attr('dy', height).style('font-size', '22px').attr('fill', colors.LIGHT_BLACK).text('0');
+
+        scatterLegend.append('text').attr('dx', (width - scatterMargin.right) / 2).attr('dy', height + 30).attr('text-anchor', 'middle').style('font-size', '28px').attr('fill', colors.LIGHT_BLACK).text('Portion of economically disadvantaged students');
+        scatterLegend.append('text').attr('dx', width - scatterMargin.right).attr('dy', height).attr('text-anchor', 'end').style('font-size', '22px').attr('fill', colors.LIGHT_BLACK).text('100%');
+
+        scatterLegend.append('line').attr('x1', 0).attr('x2', width - scatterMargin.right).attr('y1', height - scatterMargin.bottom).attr('y2', height - scatterMargin.bottom).attr('stroke', colors.LIGHT_BLACK).attr('stroke-width', 2);
+
+        scatterLegend.append('line').attr('x1', width - scatterMargin.right).attr('x2', width - scatterMargin.right).attr('y1', 0).attr('y2', height - scatterMargin.bottom).attr('stroke', colors.LIGHT_BLACK).attr('stroke-width', 2);
+
         _this3.richData = cleaned.filter(function (d) {
           return d.properties.isPropertyWealthy;
         });
-        var arcs = _this3.arcs = svg.append('g');
-        _this3.richArcs = arcs.selectAll('.rich-arc').data(cleaned.filter(function (d) {
-          return d.properties.isPropertyWealthy;
-        })).enter().append('path').attr('class', 'rich-arc').attr('d', function (d) {
-          d.startAngle = 0;
-          d.end = 0;
-          return arc({ startAngle: d.startAngle, endAngle: d.endAngle });
-        }).attr('transform', function (d, i) {
-          var center = getCircleCenter(d, i, -yOffset);
-          return 'translate(' + center.join(',') + ')';
-        }).style('fill', colors.RED).attr('opacity', 1);
+        // const arcs = this.arcs = svg.append('g');
+        // this.richArcs = arcs.selectAll('.rich-arc').data(cleaned.filter((d) => d.properties.isPropertyWealthy))
+        //   .enter()
+        //   .append('path')
+        //   .attr('class', 'rich-arc')
+        //   .attr('d', (d) => {
+        //     d.startAngle = 0;
+        //     d.end = 0;
+        //     return arc({ startAngle: d.startAngle, endAngle: d.endAngle })
+        //   })
+        //   .attr('transform', (d, i) => {
+        //     const center = getCircleCenter(d, i, -yOffset)
+        //     return `translate(${center.join(',')})`;
+        //   })
+        //   .style('fill', colors.RED)
+        //   .attr('opacity', 1)
 
-        _this3.poorArcs = arcs.selectAll('.poor-arc').data(cleaned.filter(function (d) {
-          return !d.properties.isPropertyWealthy;
-        })).enter().append('path').attr('class', 'poor-arc').attr('d', function (d) {
-          d.startAngle = 0;
-          d.end = 0;
-          return arc({ startAngle: d.startAngle, endAngle: d.endAngle });
-        }).attr('transform', function (d, i) {
-          var center = getCircleCenter(d, i, yOffset);
-          return 'translate(' + center.join(',') + ')';
-        }).style('fill', 'orange').attr('opacity', 1);
+        // this.poorArcs = arcs.selectAll('.poor-arc').data(cleaned.filter((d) => !d.properties.isPropertyWealthy))
+        //   .enter()
+        //   .append('path')
+        //   .attr('class', 'poor-arc')
+        //   .attr('d', (d) => {
+        //     d.startAngle = 0;
+        //     d.end = 0;
+        //     return arc({ startAngle: d.startAngle, endAngle: d.endAngle })
+        //   })
+        //   .attr('transform', (d, i) => {
+        //     const center = getCircleCenter(d, i, yOffset)
+        //     return `translate(${center.join(',')})`;
+        //   })
+        //   .style('fill', 'orange')
+        //   .attr('opacity', 1)
 
-        console.log(_this3.richArcs);
+        // console.log(this.richArcs);
 
         _this3.rich = paths.filter(function (d) {
           return d.properties.isPropertyWealthy;
@@ -1267,15 +1347,58 @@ var DistrictComparison = function (_D3Component) {
       var fsSizeX = 100;
       var fsSizeY = 20;
 
-      var federal = fundingSources.append('rect').attr('x', 10).attr('y', height / 2 - fsSizeY / 2).attr('width', fsSizeX).attr('height', fsSizeY).attr('fill', '#ddd').attr('stroke', '#333').attr('strokeWidth', 3);
+      fundingSources.append('text').attr('dx', width / 2).attr('dy', height / 2 + 1.5 * 18)
+      // .style('dominant-baseline', 'middle')
+      .attr('text-anchor', 'middle').attr('fill', colors.BLACK).style('font-weight', 'bold').style('font-size', '48px').text('STATE');
 
-      var state = fundingSources.append('rect').attr('x', width - 10 - fsSizeX).attr('y', height / 2 - fsSizeY / 2).attr('width', fsSizeX).attr('height', fsSizeY).attr('fill', '#ddd').attr('stroke', '#333').attr('strokeWidth', 3);
+      var arrowCount = this.arrowCount = 5;
+      fundingSources.selectAll('line.top').data(d3.range(arrowCount)).enter().append('line').attr('class', 'top').attr('x1', function (d, i) {
+        return width / 2 - 100 * (i - arrowCount / 2) - 50;
+      }).attr('x2', function (d, i) {
+        return width / 2 - 100 * (i - arrowCount / 2) - 50;
+      }).attr('y1', function (d, i) {
+        return i === Math.floor(arrowCount / 2) ? height / 2 - 50 : height / 2 - 90;
+      }).attr('y2', height / 2 - 50).attr('opacity', function (d, i) {
+        return i === Math.floor(arrowCount / 2) ? 0 : 1;
+      }).attr('marker-end', 'url(#arrow)').attr('fill', colors.BLACK).attr('stroke', colors.BLACK).attr('stroke-width', 5);
+
+      fundingSources.append('text').attr('dx', width / 2).attr('dy', height / 2 - 60).attr('fill', colors.GREEN)
+      // .attr('stroke', '#ffffff')
+      // .attr('stroke-width', 10)
+      // .attr('stroke-mit', 10)
+      .attr('text-anchor', 'middle').style('font-size', '36px').style('font-weight', 'bold').text('$$$');
+
+      fundingSources.append('line').attr('x1', width / 2 - 200).attr('x2', width / 2 + 200).attr('y1', height / 2 - 20).attr('y2', height / 2 - 20).style('stroke', colors.BLACK).style('stroke-width', 1);
+      fundingSources.append('line').attr('x1', width / 2 - 200).attr('x2', width / 2 + 200).attr('y1', height / 2 + 40).attr('y2', height / 2 + 40).style('stroke', colors.BLACK).style('stroke-width', 1);
+
+      this.bottomArrows = fundingSources.selectAll('line.bottom').data(d3.range(arrowCount)).enter().append('line').attr('class', 'bottom').attr('x1', function (d, i) {
+        return width / 2 - 100 * (i - arrowCount / 2) - 50;
+      }).attr('x2', function (d, i) {
+        return width / 2 - 100 * (i - arrowCount / 2) - 50;
+      }).attr('y1', height / 2 + 60).attr('y2', height / 2 + 110).attr('marker-end', 'url(#arrow)').attr('fill', colors.BLACK).attr('stroke', colors.BLACK).attr('stroke-width', 5);
+
+      this.bottomText = fundingSources.selectAll('text.bottom').data(d3.range(arrowCount)).enter().append('text').attr('class', 'bottom').attr('dx', function (d, i) {
+        return width / 2 - 100 * (i - arrowCount / 2) - 50;
+      }).attr('dy', height / 2 + 105).attr('text-anchor', 'middle').attr('fill', colors.BLACK)
+      // .style('font-weight', 'bold')
+      .style('font-size', '48px').attr('opacity', 0).text('?');
+
+      // const state = fundingSources.append('rect')
+      //   .attr('x', width - 10 - fsSizeX)
+      //   .attr('y', height / 2 - fsSizeY / 2)
+      //   .attr('width', fsSizeX)
+      //   .attr('height', fsSizeY)
+      //   .attr('fill', '#ddd')
+      //   .attr('stroke', '#333')
+      //   .attr('strokeWidth', 3);
 
       // this.currentState = states.INITIAL;
     }
   }, {
     key: 'update',
     value: function update(props) {
+      var _this4 = this;
+
       var state = props.state;
       var rich = this.rich,
           poor = this.poor,
@@ -1335,6 +1458,8 @@ var DistrictComparison = function (_D3Component) {
           console.log('ANIMATION TIME: ' + animationTime);
           var maxSize = Math.max(rich.size(), poor.size());
 
+          this.mapLegend.transition().delay(animationTime / 2).duration(animationTime).style('opacity', 1);
+
           this.paths.transition().delay(function (d, i) {
             return i * particleDelay / 8;
           }).duration(animationTime / 3).style('fill-opacity', 1.0).style('stroke', '#ffffff');
@@ -1375,6 +1500,11 @@ var DistrictComparison = function (_D3Component) {
           //   .delay(0)
           //   .duration(animationTime)
           //   .style('opacity', 0);
+
+          this.mapLegend.transition().duration(animationTime).style('opacity', 0);
+
+          this.circleLegend.transition().delay(animationTime / 2).duration(animationTime).style('opacity', 1);
+
           rich.transition().delay(function (d, i) {
             return i * particleDelay / 4;
           }).duration(animationTime / 4).attr("opacity", function (d, i) {
@@ -1387,9 +1517,22 @@ var DistrictComparison = function (_D3Component) {
           }).duration(animationTime / 4).attrTween("d", function (d, i) {
             return poorInterpolator(d, i);
           });
+
           break;
         case states.TAXES:
           console.log('taxes');
+
+          this.circleLegend.transition().duration(animationTime).style('opacity', 0.3);
+
+          this.fundingSources.transition().duration(animationTime).style('opacity', 1);
+
+          this.bottomArrows.transition().delay(function (d, i) {
+            return 2 * animationTime + (_this4.arrowCount - 1 - i) * 700;
+          }).duration(animationTime).style('opacity', 0);
+
+          this.bottomText.transition().delay(function (d, i) {
+            return 2.5 * animationTime + (_this4.arrowCount - 1 - i) * 700;
+          }).duration(animationTime).style('opacity', 1);
           // rich
           //   .filter(d => d.properties.recapturePaid === 0)
           //   .transition()
@@ -1414,102 +1557,111 @@ var DistrictComparison = function (_D3Component) {
           // .style('stroke', (d) => d.properties.taxRate >= 1.17 ? colors.BLUE : 'none')
           // .style('stroke-width', (d) => d.properties.taxRate >= 1.17 ? 5 : 0)
 
+          break;
+        case states.RECAPTURE1:
+
+          this.circleLegend.transition().delay(animationTime / 2).duration(animationTime).style('opacity', 1.0);
+
+          this.fundingSources.transition().duration(animationTime).style('opacity', 0);
+
+          this.maxRateGroup.transition().delay(poor.size() / 2 * particleDelay / 2).duration(animationTime).style('opacity', 1);
+
           poor.transition().duration(animationTime).delay(function (_, i) {
             return i * particleDelay / 2;
           }).style('fill', function (d) {
-            return d.properties.taxRate >= 1.17 ? 'white' : colors.RED;
+            return d.properties.taxRate >= 1.17 ? 'white' : colors.PURPLE;
           }).style('stroke', function (d) {
-            return d.properties.taxRate >= 1.17 ? colors.RED : 'none';
+            return d.properties.taxRate >= 1.17 ? colors.PURPLE : 'none';
           }).style('stroke-width', function (d) {
             return d.properties.taxRate >= 1.17 ? 5 : 0;
           });
           // .style("fill", (d, i) => this.color(d.properties.taxRate));
-          break;
-        case states.RECAPTURE1:
 
-          rich.attr('opacity', 0);
-          poor.attr('opacity', 0);
-          // const y = d3.scaleLog().domain([1, 20000000]).range([height, 0]);
-          // poor.filter(d => d.properties.taxRate >= 1.17).each((d) => {
-          //   console.log(d.properties);
-          //   // console.log(d.properties.propertyWealth1995)
-          //   // console.log(d.properties.ada1995)
-          //   // console.log(d.properties.propertyWealth2016)
-          //   // console.log(d.properties.ada2016)
-          //   const oldRate = d.properties.propertyWealth1995 / d.properties.ada1995;
-          //   const newRate = d.properties.propertyWealth2016 / d.properties.ada2016;
-          //   const improvement = (newRate - oldRate) / oldRate;
-          //   this.svg.append('circle')
-          //     .attr('cx', 10)
-          //     .attr('cy', y(oldRate))
-          //     .attr('r', 5)
-          //     .attr('fill', 'red')
+          if (this.currentState === states.RECAPTURE2) {
+            rich.transition().delay(function (d, i) {
+              return i * particleDelay / 4;
+            }).duration(animationTime).attr("d", function (d, i) {
+              var _d = d3.select(this).attr('d');
+              return flubber.toCircle(_d, _xScale(d.properties.percentEconDisadvantaged), _yScale(d.properties.propertyWealth2016 / d.properties.ada2016), circleSize / 3);
+            });
+            poor.style('fill', colors.PURPLE).style('stroke', 'none').transition().delay(function (d, i) {
+              return i * particleDelay / 6;
+            }).duration(animationTime).attr('opacity', function (d) {
+              return d.properties.percentEconDisadvantaged > 0 ? 0.75 : 0;
+            }).attrTween("d", function (d, i) {
+              var _d = d3.select(this).attr('d');
+              return flubber.toCircle(_d, _xScale(d.properties.percentEconDisadvantaged), _yScale(d.properties.propertyWealth2016 / d.properties.ada2016), circleSize / 3);
+            });
+            this.svg.select('.axis.y').remove();
 
-          //   this.svg.append('circle')
-          //     .attr('cx', width- 10)
-          //     .attr('cy', y(newRate))
-          //     .attr('fill', 'red')
-          //     .attr('r', 5)
+            this.circleLegend.style('opacity', 1);
 
-          //   this.svg.append('line')
-          //     .attr('x1', 10)
-          //     .attr('x2', width- 10)
-          //     .attr('y1', y(oldRate))
-          //     .attr('y2', y(newRate))
-          //     .attr('stroke', 'red')
-          //     .attr('opacity', 0.25)
-          //     .attr('fill', 'none');
-          // })
-          // rich.each((d) => {
-          //   console.log(d.properties);
-          //   // console.log(d.properties.propertyWealth1995)
-          //   // console.log(d.properties.ada1995)
-          //   // console.log(d.properties.propertyWealth2016)
-          //   // console.log(d.properties.ada2016)
-          //   const oldRate = d.properties.propertyWealth1995 / d.properties.ada1995;
-          //   const newRate = d.properties.propertyWealth2016 / d.properties.ada2016;
-          //   const improvement = (newRate - oldRate) / oldRate;
-          //   this.svg.append('circle')
-          //     .attr('cx', 10)
-          //     .attr('cy', y(oldRate))
-          //     .attr('fill', 'blue')
-          //     .attr('r', 5)
+            this.scatterLegend.style('opacity', 0);
+          }
 
-          //   this.svg.append('circle')
-          //     .attr('cx', width- 10)
-          //     .attr('cy', y(newRate))
-          //     .attr('fill', 'blue')
-          //     .attr('r', 5)
-
-          //   this.svg.append('line')
-          //     .attr('x1', 10)
-          //     .attr('x2', width- 10)
-          //     .attr('y1', y(oldRate))
-          //     .attr('y2', y(newRate))
-          //     .attr('stroke', 'blue')
-          //     .attr('opacity', 0.25)
-          //     .attr('fill', 'none');
-          // })
-          // .transition()
-          // .duration(animationTime)
-          // .delay((_, i) => i * particleDelay)
-          // .style('stroke', (d) => d.properties.taxRate >= 1.17 ? 'black' : 'none')
-          // .style('stroke-width', (d) => d.properties.taxRate >= 1.17 ? 3 : 0)
-          // this.startForceSimulation();
-          // this.richArcs
-          //   .attr('opacity', 1)
-          //   .transition()
-          //   .delay((d, i) => i * particleDelay)
-          //   .duration(animationTime)
-          //   .attrTween("d", (d) => arcTween(Math.random() * 2 * Math.PI, this.arc));
-          // this.poorArcs
-          //   .attr('opacity', 1)
-          //   .transition()
-          //   .delay((d, i) => i * particleDelay)
-          //   .duration(animationTime)
-          //   .attrTween("d", (d) => arcTween(Math.random() * 2 * Math.PI, this.arc));
           break;
         case states.RECAPTURE2:
+
+          this.circleLegend.transition().duration(animationTime).style('opacity', 0);
+
+          this.scatterLegend.transition().duration(animationTime).style('opacity', 1);
+
+          var _xScale = d3.scaleLinear().domain([0, 1]).range([0, width - scatterMargin.right]).clamp(true);
+          var _yScale = d3.scaleLog().domain([10000, 25000000]).range([height - scatterMargin.bottom, 0]).clamp(true);
+
+          var yAxis = d3.axisRight(_yScale);
+          // Add the Y Axis
+          this.svg.append("g").attr('class', 'axis y').attr("transform", 'translate(' + (width - scatterMargin.right) + ', 0)').call(yAxis.ticks(5).tickFormat(function (d) {
+            var f = d3.format(".2s");
+            var n = +f(d).substring(0, 1);
+            if (n === 1 || n % 2 === 0) {
+              return f(d);
+            }
+            return '';
+          }));
+
+          rich.transition().delay(function (d, i) {
+            return i * particleDelay / 4;
+          }).duration(animationTime).attr('opacity', function (d) {
+            return d.properties.percentEconDisadvantaged > 0 ? 0.75 : 0;
+          }).attrTween("d", function (d, i) {
+            var _d = d3.select(this).attr('d');
+            return flubber.toCircle(_d, _xScale(d.properties.percentEconDisadvantaged), _yScale(d.properties.propertyWealth2016 / d.properties.ada2016), circleSize / 3);
+          });
+          poor.style('fill', colors.PURPLE).style('stroke', 'none').transition().delay(function (d, i) {
+            return i * particleDelay / 6;
+          }).duration(animationTime).attr('opacity', function (d) {
+            return d.properties.percentEconDisadvantaged > 0 ? 0.75 : 0;
+          }).attrTween("d", function (d, i) {
+            var _d = d3.select(this).attr('d');
+            return flubber.toCircle(_d, _xScale(d.properties.percentEconDisadvantaged), _yScale(d.properties.propertyWealth2016 / d.properties.ada2016), circleSize / 3);
+          });
+          // rich
+          //   .transition()
+          //   .delay((_, i) => i * particleDelay)
+          //   .duration(animationTime)
+          //   .attrTween("d", function (d, i) {
+          //     const _d =  d3.select(this).attr('d');
+          //     return flubber.toCircle(_d, xScale(d.properties.percentWhite), yScale(d.properties.propertyWealth2016 / d.properties.ada2016), circleSize);
+          //   });
+          // poor
+          //   .transition()
+          //   .delay((_, i) => i * particleDelay)
+          //   .duration(animationTime)
+          //   .attrTween("d", function (d, i) {
+          //     const _d =  d3.select(this).attr('d');
+          //     console.log(d.properties);
+          //     // console.log('xval', d.properties.percentEconDisadvantaged);
+          //     // console.log('x', xScale(d.properties.percentEconDisadvantaged));
+          //     // console.log('y', yScale(d.properties.propertyWealth2016 / d.properties.ada2016))
+          //     const interpolator = flubber.toCircle(_d, xScale(d.properties.percentEconDisadvantaged), yScale(d.properties.propertyWealth2016 / d.properties.ada2016), circleSize);
+          //     return (t) => interpolator(t);
+          //   });
+          // poor
+          //   .transition()
+          //   .delay((_, i) => i * particleDelay)
+          //   .duration(animationTime)
+          //   .attrTween("d", (d, i) => richInterpolator(d, i, true));
           // rich
           //   .transition()
           //   .duration(animationTime)
@@ -1739,9 +1891,9 @@ var IntroChart = function (_D3Component) {
 
       var label = 'Student population (millions)';
       var fontSize = 12;
-      var w = label.length * 0.5 * fontSize + 10;
+      var w = label.length * 0.5 * fontSize + 20;
       var h = 30;
-      populationGroup.append('rect').attr('x', x(new Date('1996')) - 5).attr('y', y(3891877) + 30).attr('width', w).attr('height', h).attr('stroke', 'black').attr('stroke-width', 2).attr('stroke-dasharray', '0,' + (w + h) + ',' + w + ',' + h).attr('fill', 'none');
+      populationGroup.append('rect').attr('x', x(new Date('1996')) - 10).attr('y', y(3891877) + 30).attr('width', w).attr('height', h).attr('stroke', 'black').attr('stroke-width', 2).attr('stroke-dasharray', '0,' + (w + h) + ',' + w + ',' + h).attr('fill', 'none');
 
       populationGroup.append('text').attr('dx', x(new Date('1996'))).attr('dy', y(3891877) + 45).style('dominant-baseline', 'middle').attr('font-size', fontSize + 'px').attr('fill', '#000').text(label);
 
@@ -1920,6 +2072,19 @@ var IntroChart = function (_D3Component) {
         case states.POPULATION2:
           this.setProgress(3);
           console.log('population 2');
+          this.y.domain([0, 5524925]);
+          this.svg.select(".y.axis").call(this.yAxis.tickFormat(function (d) {
+            var ems = d / 1000000;
+            if (ems === Math.floor(ems)) {
+              if (ems >= 5) {
+                return ems + 'm';
+              }
+              return ems.toFixed(0);
+            }
+            return '';
+          }));
+          this.svg.select(".y.grid").call(d3.axisLeft(this.y).ticks(7).tickSize(-this.width).tickFormat(""));
+
           this.populationGroup.attr('opacity', 1);
           this.subOverlays.transition()
           //.duration(1000)
@@ -73275,7 +73440,7 @@ if ("production" === 'production') {
 },{"./cjs/react.development.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.development.js","./cjs/react.production.min.js":"/Users/mathisonian/projects/node_modules/react/cjs/react.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["div", [["style", ["expression", "{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#f3f1f2',\n    backgroundSize: 'cover',\n    backgroundPosition: '50% 30%', zIndex: -1} "]]], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "Dek TK"]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["div", [["style", ["expression", "{paddingTop: 120, paddingBottom: 120, background: 'white'}"]]], [["p", [], ["TKTK A short intro. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in sapien id nunc vehicula tempus. Integer ornare odio eu euismod mattis. Duis accumsan erat et nunc dapibus sollicitudin. Integer hendrerit enim in urna mollis, non sollicitudin sem consequat."]], ["br", [], []], ["br", [], []], ["p", [], ["Vestibulum vitae nisl sagittis, consectetur enim sed, semper tortor. Sed ullamcorper magna sed pulvinar pellentesque. Nam id aliquet lectus. Aliquam neque est, laoreet nec ligula nec, pulvinar iaculis eros. Mauris gravida, leo vel facilisis eleifend, nulla ipsum convallis tellus, nec rutrum enim purus et justo."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [["value", ["variable", "scrollValue"]]], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["value", ["expression", " scrollValue "]], ["className", ["value", "alt"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 1995, the number of children attending Texas schools has increased by more than 1.5 million.\n  "]], ["Waypoint", [], ["\n    The number of students who are economically disadvantaged has been increasing as well, from 1.7 million in\n    1995 to over 3 million in 2016.\n  "]], ["Waypoint", [], ["\n    The increase in students who are economically disadvantaged has been outpacing the general population growth, rising from 46% in 1995 to 59% in 2016.\n  "]], ["Waypoint", [], [["p", [], ["\n    While the average amount of funding per student has increased during this period,\n    individual districts are still feeling a squeeze."]], ["p", [], ["To understand why, we have to examine where school districts get their money.\n  "]]]], ["Waypoint", [], ["\n    School districts recieve money from state, federal and local funds. Federal funding accounts for only about 9% of district revenue on average, with the majority coming from state and local sources. Local funding comes largely from property taxes.\n  "]], ["Waypoint", [["style", ["expression", "{marginBottom: '50vh'}"]]], ["\n    Since 2012 the proportion of funding coming from local property taxes has increased. Districts without\n    much property wealth have a hard time keeping up.\n  "]]]], ["Section", [["style", ["expression", "{paddingTop: 60}"]]], [["div", [], [["Slideshow", [["currentSlide", ["variable", "districtStateIndex"]]], [["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["This reliance on local property taxes creates inequity in school funding:\nproperty wealthy districts are able to raise money much more easily than\nproperty poor districts. To address this, the state has instituted a ", ["em", [], ["Robin Hood"]], "-esque program called ", ["strong", [], ["recapture"]], ",\nthat redistributes funds from property rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["The state classifies school districts that above a certain threshold of property wealth per student as ", ["strong", [], ["property wealthy"]], "."]], ["p", [], ["The property wealth of districts varies greatly: Westhoff ISD has the highest property wealth per student, with over $24 million in property wealth per student; Boles ISD is on the other extreme with only about $32,000 per student in property wealth."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Of the 1022 independent school districts in Texas, 379 (37%) are considered property wealthy by the state. These districts are all eligible to pay into the recapture fund, however because of exceptions only 230 of them actually contribute anything."]], ["p", [], ["Of the districts that do pay, Austin ISD contributes the most, $265 million in 2016-17, accounting for about 18% of the total recapture revenue."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["While all independent districts receive funds from the state and federal government, the local property tax rate\nis the main mechanism for districts to raise additional funds."]], ["p", [], ["There is a cap on how heavily property can be taxed: of the property poor districts, 43% percent are already taxing property at the highest allowable rate, compared with only 8% of property wealthy districts."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Without a way to increase local taxes, it is hard for property poor districts to raise additional money. Folo reports that property rich districts are also hesitant to raise their own taxes and increase their contribution to recapture."]], ["p", [], ["Both groups are left unwanting or unable to raise local property taxes -- the one lever that they heve to pull in order to raise school funds."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Explore."]]]]]], ["controls", [["index", ["variable", "districtStateIndex"]], ["length", ["expression", "districtStates.length"]]], []]]], ["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]], ["analytics", [["google", ["value", "UA-5866209-13"]]], []]];
+module.exports = [["var", [["name", ["value", "triggerUpdate"]], ["value", ["value", false]]], []], ["var", [["name", ["value", "districtStateIndex"]], ["value", ["value", 0]]], []], ["var", [["name", ["value", "districtStates"]], ["value", ["expression", " ['initial', 'extremes', 'income', 'taxes', 'recapture-1', 'recapture-2'] "]]], []], ["derived", [["name", ["value", "districtState"]], ["value", ["expression", " districtStates[districtStateIndex] "]]], []], ["nav", [], []], ["div", [["style", ["expression", "{width: '100%', height:'100vh', position: 'fixed', top: 0, background: '#f3f1f2',\n    backgroundSize: 'cover',\n    backgroundPosition: '50% 30%', zIndex: -1} "]]], []], ["Header", [["title", ["value", "Hed TK: Education Interactive"]], ["subtitle", ["value", "Dek TK"]], ["author", ["value", "Matthew Conlen"]], ["authorLink", ["value", "https://twitter.com/mathisonian"]]], []], ["div", [["style", ["expression", "{paddingTop: 120, paddingBottom: 120, background: 'white'}"]]], [["p", [], ["TKTK A short intro. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in sapien id nunc vehicula tempus. Integer ornare odio eu euismod mattis. Duis accumsan erat et nunc dapibus sollicitudin. Integer hendrerit enim in urna mollis, non sollicitudin sem consequat."]], ["br", [], []], ["br", [], []], ["p", [], ["Vestibulum vitae nisl sagittis, consectetur enim sed, semper tortor. Sed ullamcorper magna sed pulvinar pellentesque. Nam id aliquet lectus. Aliquam neque est, laoreet nec ligula nec, pulvinar iaculis eros. Mauris gravida, leo vel facilisis eleifend, nulla ipsum convallis tellus, nec rutrum enim purus et justo."]]]], ["var", [["name", ["value", "scrollValue"]], ["value", ["value", 0]]], []], ["Feature", [["value", ["variable", "scrollValue"]]], [["Feature.Content", [], [["FullScreen", [], [["div", [], [["IntroChart", [["value", ["expression", " scrollValue "]], ["className", ["value", "alt"]]], []]]]]]]], ["Waypoint", [], ["\n    Since 1995, the number of children attending Texas schools has increased by more than 1.5 million.\n  "]], ["Waypoint", [], ["\n    The number of students who are economically disadvantaged has been increasing as well, from 1.7 million in\n    1995 to over 3 million in 2016.\n  "]], ["Waypoint", [], ["\n    The increase in students who are economically disadvantaged has been outpacing the general population growth, rising from 46% in 1995 to 59% in 2016.\n  "]], ["Waypoint", [], [["p", [], ["\n    While the average amount of funding per student has increased during this period,\n    individual districts are still feeling a squeeze."]], ["p", [], ["To understand why, we have to examine where school districts get their money.\n  "]]]], ["Waypoint", [], ["\n    School districts recieve money from state, federal and local funds. Federal funding accounts for only about 9% of district revenue on average, with the majority coming from state and local sources. Local funding comes largely from property taxes.\n  "]], ["Waypoint", [["style", ["expression", "{marginBottom: '50vh'}"]]], ["\n    Since 2012 the proportion of funding coming from local property taxes has increased. Districts without\n    much property wealth have a hard time keeping up.\n  "]]]], ["Section", [["style", ["expression", "{paddingTop: 60}"]]], [["div", [], [["Slideshow", [["currentSlide", ["variable", "districtStateIndex"]]], [["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["This reliance on local property taxes creates inequity in school funding:\nproperty wealthy districts are able to raise money much more easily than\nproperty poor districts. To address this, the state has instituted a ", ["em", [], ["Robin Hood"]], "-esque program called ", ["strong", [], ["recapture"]], ",\nthat redistributes funds from property rich districts to property poor districts."]], ["p", [], ["While the program seems well intentioned to improve equity in school fundings, in practice\nboth rich and poor districts find themselves stuck in undesirable situations."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["The state classifies school districts that above a certain threshold of property wealth per student as ", ["strong", [], ["property wealthy"]], "."]], ["p", [], ["The property wealth of districts varies greatly: Westhoff ISD has the highest property wealth per student, with over $24 million in property wealth per student; Boles ISD is on the other extreme with only about $32,000 per student in property wealth."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["Of the 1022 independent school districts in Texas, 379 (37%) are considered property wealthy by the state. These districts are all eligible to pay into the recapture fund, however because of exceptions only 230 of them actually contribute anything."]], ["p", [], ["Of the districts that do pay, Austin ISD contributes the most, $265 million in 2016-17, accounting for about 18% of the total recapture revenue."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["The money is supposed to be redistributed to the school districts via state funding, however the\nstate does not report how this money is being used or where it is going."]], ["p", [], ["Folo found that property wealthy districts are hesitant to raise their property taxes (and increase their contribution to recapture) due in part to this lack of transparency by the state."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["While all independent districts receive funds from the state and federal government, the local property tax rate\nis the main mechanism for districts to raise additional funds."]], ["p", [], ["There is a cap on how heavily property can be taxed: of the property poor districts, 43% percent are already taxing property at the highest allowable rate, compared with only 8% of property wealthy districts."]]]], ["Slide", [], [["h1", [], ["A Virtual Gridlock"]], ["p", [], ["While all independent districts receive funds from the state and federal government, the local property tax rate\nis the main mechanism for districts to raise additional funds."]], ["p", [], ["Both groups are left unwanting or unable to raise local property taxes -- the one lever that they heve to pull in order to raise school funds."]]]]]], ["controls", [["index", ["variable", "districtStateIndex"]], ["length", ["expression", "districtStates.length"]]], []]]], ["div", [["className", ["value", "district-container"]]], [["DistrictComparison", [["state", ["expression", " districtState "]], ["className", ["value", "district-viz"]]], []]]]]], ["Section", [["direction", ["value", "column"]], ["className", ["value", "short"]]], [["flex", [["direction", ["value", "vertical"]]], [["h1", [], ["Combined, the future for the state’s ", "5", ".", "3", " million children is at risk."]], ["p", [], ["To find out how we got here, you have to go back to the west side of San Antonio in the early 70s when a group of Mexican-American families were locked in a Supreme Court battle against the state of Texas over whether Education is a constitutionally protected right. FIND OUT MORE."]]]], ["flex", [["direction", ["value", "horizontal"]], ["fullBleed", ["value", true]], ["align", ["value", "around"]], ["className", ["value", "story-container"]]], [["StoryTeaser", [], []], ["StoryTeaser", [], []], ["StoryTeaser", [], []]]]]], ["analytics", [["google", ["value", "UA-5866209-13"]]], []]];
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';

@@ -998,7 +998,7 @@ text {
 }
 
 .district-viz text {
-  font-size: 48px;
+  /* font-size: 48px; */
 }
 
 
@@ -1049,4 +1049,8 @@ text {
 
 .slideshow .slide {
   /* height: 400px; */
+}
+
+.district-viz svg .axis text {
+  font-size: 22px;
 }
