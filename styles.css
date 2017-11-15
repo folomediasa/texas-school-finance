@@ -1071,6 +1071,10 @@ text {
   width: 25%;
 }
 
+.control {
+  cursor: pointer;
+}
+
 @media all and (max-width: 800px) {
   .district-viz {
     width: 75%;
