@@ -1064,7 +1064,7 @@ text {
 }
 
 .section {
-  flex-direction: row;
+  /* flex-direction: row; */
 }
 
 .story-teaser {
