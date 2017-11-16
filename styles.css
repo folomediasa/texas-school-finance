@@ -1126,6 +1126,10 @@ text {
     font-size: 12px;
   }
   .district-viz svg {
-    margin-top: -60px;
+    margin-top: -30px;
+  }
+
+  .section > div {
+    max-width: 95%;
   }
 }
