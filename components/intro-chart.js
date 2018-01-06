@@ -38,6 +38,8 @@ function initialDash() {
 
 class IntroChart extends D3Component {
   initialize(node, props) {
+
+    this.isMobile = window.innerWidth < 800;
     const margin = { top: 20, right: 0, bottom: 60, left: 50 };
     const totalWidth = window.innerWidth;
     const totalHeight = window.innerHeight;
@@ -288,6 +290,7 @@ class IntroChart extends D3Component {
       .attr('dy', y(projected2005Econ[16].y) + 40 + fontSize)
       .attr('fill', 'white')
       .attr('stroke', 'none')
+      .attr('text-anchor', this.isMobile ? 'end' : 'start')
       .text(label);
 
     // subOverlays.append('rect')
@@ -332,6 +335,7 @@ class IntroChart extends D3Component {
     w = label.length * 0.5 * fontSize + 20;
     h = 30;
 
+    const fundingSources = this.fundingSources = revenuePaths.append('g').attr('opacity', 0);
     this.revenueLabelRect = revenuePaths.append('rect')
     .attr('x', x(new Date('1996')) - 10)
     .attr('width', w)
@@ -339,11 +343,10 @@ class IntroChart extends D3Component {
     .attr('stroke', 'black')
     .attr('stroke-width', 2)
     .attr('stroke-dasharray', `0,${w + h},${w},${h}`)
-    .attr('fill', 'none')
+    .style('fill', this.isMobile ? '#f3f1f2' : 'none')
 
 
-
-  this.revenueLabelText = revenuePaths.append('text')
+    this.revenueLabelText = revenuePaths.append('text')
     .attr('dx', x(new Date('1996')))
     // .attr('text-anchor', 'middle')
     .style('dominant-baseline', 'middle')
@@ -351,9 +354,6 @@ class IntroChart extends D3Component {
     .attr('fill', 'black')
     .attr('stroke', 'none')
     .text(label)
-
-    const fundingSources = this.fundingSources = revenuePaths.append('g').attr('opacity', 0);
-
 
     this.stateFunding = fundingSources.append('path')
       .attr('fill', colors.BLUE)
@@ -364,6 +364,7 @@ class IntroChart extends D3Component {
     this.stateFundingText = fundingSources.append('text').text('State funding')
     .attr('fill', 'black')
     .style('font-size', fontSize + 'px')
+    .attr('text-anchor', this.isMobile ? 'end' : 'start')
     .attr('dx', x(new Date('2014')));
 
     this.localFunding = fundingSources.append('path')
@@ -371,19 +372,28 @@ class IntroChart extends D3Component {
     .attr('stroke', '#ffffff')
     .attr('stroke-width', 0.5)
 
-    this.localFundingText = fundingSources.append('text').text('Local property tax')
-      .attr('fill', 'black')
-      .style('font-size', fontSize + 'px')
-      .attr('dx', x(new Date('2014')));
-
-    fontSize = 10;
     this.localOtherFunding = fundingSources.append('path')
     .attr('fill', colors.GREEN)
     .attr('fill-opacity', 0.8)
     .attr('stroke', '#ffffff')
     .attr('stroke-width', 0.5)
 
+
+    this.federalFunding = fundingSources.append('path')
+    .attr('fill', colors.PINK)
+    .attr('stroke', '#ffffff')
+    .attr('stroke-width', 0.5);
+
+    this.localFundingText = fundingSources.append('text').text('Local property tax')
+      .attr('text-anchor', this.isMobile ? 'end' : 'start')
+      .attr('fill', 'black')
+      .style('font-size', fontSize + 'px')
+      .attr('dx', x(new Date('2014')));
+
+    fontSize = 10;
+
     this.localOtherFundingText = fundingSources.append('text').text('Other local funding')
+    .attr('text-anchor', this.isMobile ? 'end' : 'start')
     .attr('fill', 'black')
     .style('font-size', fontSize + 'px')
     .attr('dx', x(new Date('2014')));
@@ -392,13 +402,9 @@ class IntroChart extends D3Component {
     //   .attr('stroke', '#ffffff')
     //   .attr('stroke-width', 0.5);
 
-    this.federalFunding = fundingSources.append('path')
-    .attr('fill', colors.PINK)
-    .attr('stroke', '#ffffff')
-    .attr('stroke-width', 0.5);
-
     fontSize = 12;
     this.federalFundingText = fundingSources.append('text').text('Federal funding')
+    .attr('text-anchor', this.isMobile ? 'end' : 'start')
     .attr('fill', 'black')
     .style('font-size', fontSize + 'px')
     .attr('dx', x(new Date('2014')));
@@ -580,7 +586,8 @@ class IntroChart extends D3Component {
         fontSize = 10;
         this.localOtherFundingText.attr('dy', y(d.state + d.local + d.localOther / 2) + 0.5 * fontSize);
         fontSize = 12;
-        this.federalFundingText.attr('dy', y(d.state + d.local + d.localOther + d.federal / 2) + 0.5 * fontSize);
+        this.federalFundingText.attr('dy',
+        this.isMobile ? 30 : y(d.state + d.local + d.localOther + d.federal / 2) + 0.5 * fontSize);
 
         this.federalFunding
           .attr('d', area.y0((d) => y(d.state + d.local + d.localOther)).y1(d => y(d.state + d.local + d.localOther + d.federal) )(stateFundingData))

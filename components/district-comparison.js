@@ -156,7 +156,7 @@ class DistrictComparison extends D3Component {
     const text = textGroup.append('text').attr('dx', 20).attr('dy', 20).style('font-size', '22px');
 
 
-    d3.json(true ? 'https://folomediasa.github.io/texas-school-finance/data/isd-topo-processed.json' : 'http://localhost:3000/data/isd-topo-processed.json', (err, topology) => {
+    d3.json(true ? 'https://folomediasa.github.io/texas-school-finance/data/isd-topo-processed.json' : 'http://localhost:3000/data/isd-topo-processed-1.json', (err, topology) => {
 
       var geojson = topojson.feature(topology, topology.objects.isd);
       // create a first guess for the projection
@@ -236,8 +236,6 @@ class DistrictComparison extends D3Component {
         // }).on('mouseout', function() {
         //   d3.select(this).style('stroke', 'none');
         // })
-
-      console.log(cleaned.filter((d) => d.rich))
 
       const mapLegend = this.mapLegend = svg.append('g').attr('opacity', 0);
       const circleLegend = this.circleLegend = svg.append('g').attr('opacity', 0);
@@ -576,10 +574,10 @@ class DistrictComparison extends D3Component {
 
           this.paths
             .style('stroke-width', 0.5);
+          this.circleLegend
+            .style('opacity', 0);
         }
 
-        this.circleLegend
-          .style('opacity', 0);
         break;
       case states.INCOME:
         this.mapLegend

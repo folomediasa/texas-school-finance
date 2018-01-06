@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "idyll index.idl --defaultComponents=components/default --template _index.html --css styles.css --theme github --watch",
-    "build": "idyll --no-minify=true index.idl --template _index.html --defaultComponents=components/default --theme github --css styles.css; cp -r {images,fonts,styles,data} build/;",
+    "build": "idyll index.idl --template _index.html --defaultComponents=components/default --theme github --css styles.css; cp -r {images,fonts,styles,data} build/;",
     "transform": "node scripts/transform-data.js && cp data/yearly-averages.json components/",
     "deploy": "npm run build && gh-pages -d ./build"
   },
@@ -11,7 +11,7 @@
     "d3": "^4.0.0",
     "datalib": "^1.8.0",
     "flubber": "^0.4.0",
-    "idyll": "^2.0.0",
+    "idyll": "^2.0.6",
     "idyll-d3-component": "^2.0.0",
     "idyll-vega-lite": "^1.0.1",
     "react-transition-group": "^2.2.1",

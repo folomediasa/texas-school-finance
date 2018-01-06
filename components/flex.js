@@ -17,12 +17,11 @@ const fullBleedStyles = {
 
 class Flex extends React.Component {
   render() {
-    const { hasError, updateProps, direction, align, fullBleed, ...props } = this.props;
+    const { hasError, updateProps, className, direction, align, fullBleed, ...props } = this.props;
     return (
-      <div style={{
+      <div className={`${directions[direction]} ${className || ''}`} style={{
         display: 'flex',
         margin: '0 auto',
-        flexDirection: directions[direction],
         justifyContent: aligns[align],
         width: fullBleed ? '100%' : 'auto',
         maxWidth: fullBleed ? 'none' : undefined

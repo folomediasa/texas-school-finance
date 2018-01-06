@@ -91,7 +91,7 @@ class Feature extends React.Component {
         memo[1] = memo[1].concat([child]);
         return memo;
       }
-      if ((c.type.name && c.type.name.toLowerCase() === 'content') || c.type.prototype instanceof Content) {
+      if ((c.type.name && c.type.name.toLowerCase() === 'content') || c.type instanceof Content) {
         memo[0] = child;
       } else {
         memo[1] = memo[1].concat([child]);
@@ -129,6 +129,7 @@ class Feature extends React.Component {
     };
 
     const [ featureChild, nonFeatureChildren ] = this.splitFeatureChildren();
+    // console.log(featureChild, nonFeatureChildren);
 
     if (featureChild) {
       const unwrapped = this.unwrapChild(featureChild);

@@ -8,9 +8,14 @@ class Waypoint extends React.PureComponent {
   }
 
   render() {
-    return <Screen className="waypoint" align="center" direction="row" height="75vh" {...this.props} />;
+    const { updateProps, height, ...props } = this.props;
+    return <Screen className="waypoint" align="center" direction="row" height={height} {...this.props} />;
   }
 
 }
+
+Waypoint.defaultProps = {
+  height: '75vh'
+};
 
 export default Waypoint;
