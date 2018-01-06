@@ -1075,6 +1075,15 @@ text {
   cursor: pointer;
 }
 
+.audio-holder {
+  max-width: 33%;
+}
+.audio-holder > div {
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
 @media all and (max-width: 800px) {
   .district-viz {
     width: 75%;
