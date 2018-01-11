@@ -1156,7 +1156,7 @@ text {
   }
 
   .pad-top-mobile {
-    margin-top: 33vh;
+    padding-top: 33vh;
   }
 
   .district-viz svg {
