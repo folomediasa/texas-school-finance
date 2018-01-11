@@ -1171,6 +1171,9 @@ text {
     margin-top: 75px;
   }
 
+  .article-header h1 {
+    font-size: 32px;
+  }
   .audio-holder {
     max-width: none;
   }
