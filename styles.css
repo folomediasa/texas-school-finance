@@ -916,7 +916,11 @@ p {
 
 figure {
   margin-top: 0;
+  /* background: white; */
+  /* z-index: 1; */
 }
+
+.section {}
 
 .section.short {
   padding-top: 0 !important;
@@ -1009,6 +1013,7 @@ button:focus {
 .district-viz {
   position: absolute;
   width: 100%;
+  overflow: hidden;
 }
 
 .district-viz svg {
