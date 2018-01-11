@@ -843,6 +843,8 @@ p {
 
 .idyll-root {
   width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
   margin-left: 0;
   margin-right: 0;
   max-width: none;
@@ -1013,7 +1015,7 @@ button:focus {
 .district-viz {
   position: absolute;
   width: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .district-viz svg {
@@ -1153,6 +1155,25 @@ text {
     padding-right: 10px;
   }
 
+  .pad-top-mobile {
+    margin-top: 33vh;
+  }
+
+  .district-viz svg {
+    overflow: visible;
+    margin-left: -15%;
+    margin-right: 15%;
+    width: 130%;
+  }
+
+
+  .article-header {
+    margin-top: 75px;
+  }
+
+  .audio-holder {
+    max-width: none;
+  }
 
   .story-container.skinny > .audio-holder  {
     margin: 0 auto;
