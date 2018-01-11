@@ -1013,6 +1013,9 @@ button:focus {
 
 .district-viz svg {
   overflow: visible;
+  margin-left: -50%;
+  margin-right: 50%;
+  width: 200%;
 }
 
 .action {
